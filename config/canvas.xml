@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dmz>
+<plugin-list>
+   <plugin name="dmzQtModuleMainWindowBasic" scope="main-window"/>
+   <plugin name="dmzQtModuleCanvasBasic" unique="canvas"/>
+   <plugin name="dmzQtModuleDropEventToMessage" unique="drop-event"/>
+   <plugin name="dmzQtPluginCanvasObject" unique="canvas-object"/>
+   <plugin name="dmzQtPluginCanvasLink" unique="canvas-link"/>
+   <plugin name="dmzQtPluginCanvasZoomPan" unique="canvas-zoom"/>
+   <plugin name="dmzQtPluginVersion"/>
+   <plugin name="dmzQtPluginIconPalletTool" unique="icon-pallet"/>
+   <plugin name="dmzRenderModulePickBasic"/>
+   <plugin name="dmzQtPluginRenderPickCanvas" unique="canvas-pick"/>
+</plugin-list>
+<main-window>
+   <corners>
+      <top right="true" left="true"/>
+      <bottom right="true" left="true"/>
+   </corners>
+   <window title="DMZ: SAE Demo"/>
+   <central-widget name="canvas"/>
+   <menu-bar>
+      <menu text="&amp;File"/>
+      <menu text="&amp;Edit"/>
+      <menu text="&amp;Window"/>
+      <menu text="&amp;Help"/>
+   </menu-bar>
+   <dock-windows>
+   </dock-windows>
+</main-window>
+<canvas>
+   <canvas opengl="false" antialiasing="true" textantialiasing="true">
+      <zoom min="0.5" max="2.0" default="0.5" step="0.5"/>
+   </canvas>
+   <scene>
+      <background grid="true"/>
+      <min x="-10000" y="-10000"/>
+      <max x="10000" y="10000"/>
+   </scene>
+   <scrollbars value="false"/>
+</canvas>
+<drop-event>
+   <message name="Drop_Create_Message"/>
+</drop-event>
+<canvas-object>
+   <plugin-list>
+      <plugin name="dmzQtPluginCanvasObjectBasic" unique="canvas-object-basic"/>
+   </plugin-list>
+   <canvas-object-basic>
+      <defaults zValue="1" itemIgnoresTransformations="false"/>
+      <template name="icon">
+         <items>
+            <group name="base node">
+               <image name="node" resource="base"/>
+               <image name="node-highlight" resource="highlight"/>
+               <image name="node-select" resource="selected"/>
+               <text name="name">
+                  <textColor>
+                     <string value="white"/>
+                     <alpha value="0.75"/>
+                  </textColor>
+                  <outlineColor>
+                     <string value="black"/>
+                     <alpha value="0.75"/>
+                  </outlineColor>
+                  <backgroundColor>
+                     <string value="black"/>
+                     <alpha value="0.75"/>
+                  </backgroundColor>
+                  <translate name="node" x="0" y="30"/>
+                  <alignment value="center"/>
+                  <scale x="1.5" y="1.5"/>
+               </text>
+            </group>
+            <group name="link mode">
+               <image name="not ok" resource="not ok" isect="false"/>
+            </group>
+            <!-- <group name="infected">
+               <image name="infected" resource="infected badge" isect="false">
+                  <translate name="node" x="1" y="-1"/>
+               </image>
+            </group> -->
+         </items>
+         <text>
+            <item name="name" attribute="Name"/>
+         </text>
+         <switch>
+            <state group="base node">
+               <item name="node"/>
+               <item name="name"/>
+            </state>
+            <state name="Highlight" group="base node">
+               <item name="node-highlight"/>
+               <item name="name"/>
+            </state>
+            <state name="Selected" group="base node">
+               <item name="node-select"/>
+               <item name="name"/>
+            </state>
+            <state name="No Linking" group="link mode">
+               <item name="not ok"/>
+            </state>
+            <!-- <state name="Infected" group="infected">
+               <item name="infected"/>
+            </state> -->
+         </switch>
+      </template>
+   </canvas-object-basic>
+</canvas-object>
+<canvas-link>
+   <link name="Network Link"/>
+   <pen-width value="4"/>
+</canvas-link>
+<canvas-zoom>
+   <zoom min="0.01" max="1.0" default="0.5" step="0.1"/>
+</canvas-zoom>
+<icon-pallet>
+   <use-session value="false"/>
+</icon-pallet>
+<canvas-pick>
+   <order x="0" y="2" z="1"/>
+   <source name="canvas"/>
+   <module>
+      <canvas name="canvas"/>
+   </module>
+</canvas-pick>
+</dmz>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<runtime>
+<resource-map>
+   <search>
+      <path value="./assets/"/>
+   </search>
+   <resource name="carrier" file="nimitz.png"/>
+   <resource name="carrier highlight" file="nimitz_invert.png"/>
+   <resource name="carrier select" file="nimitz_select.png"/>
+   <resource name="destroyer" file="arleigh-burke.png"/>
+   <resource name="destroyer highlight" file="arleigh-burke_invert.png"/>
+   <resource name="destroyer select" file="arleigh-burke_select.png"/>
+   <resource name="helicopter" file="sh-60-2.png"/>
+   <resource name="helicopter highlight" file="sh-60-2_invert.png"/>
+   <resource name="helicopter select" file="sh-60-2_select.png"/>
+   <resource name="submarine" file="submarine.png"/>
+   <resource name="submarine highlight" file="submarine_invert.png"/>
+   <resource name="submarine select" file="submarine_select.png"/>
+   <resource name="not ok" file="X.svg"/>
+   <!-- <resource name="infected badge" file="Infected.svg"/> -->
+</resource-map>
+</runtime>
+</dmz>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<runtime>
+   <time>
+      <frequency value="60.0"/>
+   </time>
+   <message name="Update_Tool_Name" monostate="true"/>
+   <state name="No Linking"/>
+   <state name="Selected"/>
+   <state name="Highlight"/>
+   <object-type name="Tool"/>
+   <object-type name="State Node" parent="Tool"/>
+   <object-type name="Tool Link Node" parent="Tool">
+      <canvas-object/>
+   </object-type>
+   <object-type name="Unknown"/>
+   <object-type name="Friend"/>
+   <object-type name="Neutral"/>
+   <object-type name="Hostile"/>
+   <object-type name="Carrier" parent="Friend">
+      <icon-pallet resource="carrier"/>
+      <canvas-object/>
+      <canvas-object-basic>
+         <template name="icon">
+            <var name="base" value="carrier"/>
+            <var name="selected" value="carrier select"/>
+            <var name="highlight" value="carrier highlight"/>
+         </template>
+      </canvas-object-basic>
+   </object-type>
+   <object-type name="Destroyer" parent="Friend">
+      <icon-pallet resource="destroyer"/>
+      <link-list>
+         <object-type name="Carrier"/>
+      </link-list>
+      <canvas-object/>
+      <canvas-object-basic>
+         <template name="icon">
+            <var name="base" value="destroyer"/>
+            <var name="selected" value="destroyer select"/>
+            <var name="highlight" value="destroyer highlight"/>
+         </template>
+      </canvas-object-basic>
+   </object-type>
+   <object-type name="Helicopter" parent="Friend">
+      <icon-pallet resource="helicopter"/>
+      <link-list>
+         <object-type name="Carrier"/>
+      </link-list>
+      <canvas-object/>
+      <canvas-object-basic>
+         <template name="icon">
+            <var name="base" value="helicopter"/>
+            <var name="selected" value="helicopter select"/>
+            <var name="highlight" value="helicopter highlight"/>
+         </template>
+      </canvas-object-basic>
+   </object-type>
+   <object-type name="Submarine" parent="Unknown">
+      <icon-pallet resource="submarine"/>
+      <canvas-object/>
+      <canvas-object-basic>
+         <template name="icon">
+            <var name="base" value="submarine"/>
+            <var name="selected" value="submarine select"/>
+            <var name="highlight" value="submarine highlight"/>
+         </template>
+      </canvas-object-basic>
+   </object-type>
+</runtime>
+</dmz>

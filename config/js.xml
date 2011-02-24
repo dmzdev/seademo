@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmz>
+<plugin-list>
+   <plugin name="dmzJsModuleV8Basic" scope="javascript"/>
+   <plugin name="dmzJsModuleTypesV8Basic" scope="javascript"/>
+   <plugin name="dmzJsModuleRuntimeV8Basic" scope="javascript"/>
+   <plugin name="dmzJsPluginV8ConsoleQt" scope="javascript"/>
+   <plugin name="dmzJsModuleUiV8QtBasic" scope="javascript"/>
+   <plugin name="dmzJsExtV8Archive" scope="javascript"/>
+   <plugin name="dmzJsExtV8Object" scope="javascript"/>
+   <plugin name="dmzJsExtV8Script" scope="javascript"/>
+   <plugin name="dmzJsExtV8File" scope="javascript"/>
+   <plugin name="dmzJsExtV8Zip" scope="javascript"/>
+   <plugin name="dmzJsExtV8ConfigIO" scope="javascript"/>
+   <plugin name="dmzJsExtV8Module" scope="javascript"/>
+</plugin-list>
+<javascript>
+   <path value="./scripts"/>
+   <path value="./ui"/>
+   <path value="../js/scripts"/>
+   <instance name="scriptTable"/>
+   <instance name="objectInit"/>
+   <instance name="objectInspector"/>
+   <!-- <instance name="carrierInspector"/> -->
+   <!-- <instance name="destroyerInspector"/> -->
+   <!-- <instance name="helicopterInspector"/> -->
+   <!-- <instance name="submarineInspector"/> -->
+   <!-- <instance name="fileMenu"/> -->
+   <!-- <instance name="editMenu"/> -->
+   <instance name="create"/>
+   <instance name="move"/>
+   <instance name="link"/>
+   <instance name="delete"/>
+   <instance name="highlight"/>
+</javascript>
+</dmz>
+
