@@ -21,10 +21,10 @@
    <instance name="scriptTable"/>
    <instance name="objectInit"/>
    <instance name="objectInspector"/>
-   <!-- <instance name="carrierInspector"/> -->
-   <!-- <instance name="destroyerInspector"/> -->
-   <!-- <instance name="helicopterInspector"/> -->
-   <!-- <instance name="submarineInspector"/> -->
+   <instance name="carrierInspector"/>
+    <instance name="destroyerInspector"/>
+    <instance name="helicopterInspector"/>
+    <instance name="submarineInspector"/>
    <!-- <instance name="fileMenu"/> -->
    <!-- <instance name="editMenu"/> -->
    <instance name="create"/>

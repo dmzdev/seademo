@@ -4,21 +4,43 @@ var dmz =
        , object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
        , uiLoader: require("dmz/ui/uiLoader")
-       , uiMessageBox: require('dmz/ui/messageBox')
        , module: require("dmz/runtime/module")
+       , vector: require("dmz/types/vector")
+       , matrix: require("dmz/types/matrix")
        , undo: require("inspectorUndo")
        }
   // Constants
-  , CarrierType = dmz.objectType.lookup("Carrier")
+  , SubmarineType = dmz.objectType.lookup("Submarine")
   // Functions
+  , _updateHeading
   // Variables
   , _inUpdate = false
   , _undo = dmz.undo.create("<Undefined from: " + self.name + ">")
   , _object
-  , _form = dmz.uiLoader.load("CarrierInspector")
+  , _form = dmz.uiLoader.load("SubmarineInspector")
   , _type = _form.lookup("typeLabel")
   , _name = _form.lookup("nameEdit")
+  , _heading = _form.lookup("headingSpinBox")
+  , _headingDial = _form.lookup("headingDial")
   ;
+
+_updateHeading = function (value, widget) {
+
+   var ori;
+
+   if (_object) {
+
+      _inUpdate = true;
+      _undo.start(widget, "Edit heading");
+
+      ori = dmz.matrix.create().fromAxisAndAngle(dmz.vector.Up, value * (Math.PI / 180));
+
+      dmz.object.orientation(_object, null, ori);
+
+      _undo.stop();
+      _inUpdate = false;
+   }
+};
 
 (function () {
 
@@ -42,12 +64,33 @@ _name.observe(self, "textChanged", function(value, widget) {
    }
 });
 
+_heading.observe(self, "valueChanged", function (value, widget) {
+
+   var dial = value + 90;
+   if (dial < 0) { dial += 360; }
+   if (dial > 359) { dial -= 360; }
+
+   _updateHeading (value, widget);
+   _headingDial.value (dial);
+});
+
+
+_headingDial.observe(self, "valueChanged", function (value, widget) {
+
+   var heading = value - 90;
+   if (heading < 0) { heading += 360; }
+   if (heading > 359) { heading -= 360; }
+
+   _updateHeading (heading, widget);
+   _heading.value (heading);
+});
+
 
 dmz.module.subscribe(self, "objectInspector", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
-      module.addInspector(self, _form, CarrierType, function (handle) {
+      module.addInspector(self, _form, SubmarineType, function (handle) {
 
          var name = dmz.object.text(handle, dmz.saeConst.NameAttr)
            , type = dmz.object.type(handle)
@@ -63,7 +106,7 @@ dmz.module.subscribe(self, "objectInspector", function (Mode, module) {
          else { _name.text(""); }
 
          _object = handle;
-      }); 
+      });
    }
 });
 
@@ -71,7 +114,7 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
-      module.addInit(self, CarrierType, function (handle, type) {
+      module.addInit(self, SubmarineType, function (handle, type) {
 
          if (!dmz.object.text(handle, dmz.saeConst.NameAttr)) {
 
@@ -80,11 +123,25 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
                dmz.saeConst.NameAttr,
                type.name() + module.counter());
          }
-      }); 
+      });
    }
 });
 
 dmz.object.text.observe(self, dmz.saeConst.NameAttr, function (handle, attr, value) {
 
    if (!_inUpdate && (handle === _object)) { _name.text(value); }
+});
+
+dmz.object.orientation.observe(self, function (handle, attr, value) {
+
+   var ori
+     ;
+
+   if (!_inUpdate && (handle === _object)) {
+
+      ori = value.toEuler();
+      _heading.value (ori[0] * (180 / Math.PI));
+
+      self.log.warn("ori: " + ori);
+   }
 });

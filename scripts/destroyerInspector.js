@@ -9,13 +9,13 @@ var dmz =
        , undo: require("inspectorUndo")
        }
   // Constants
-  , CarrierType = dmz.objectType.lookup("Carrier")
+  , DestroyerType = dmz.objectType.lookup("Destroyer")
   // Functions
   // Variables
   , _inUpdate = false
   , _undo = dmz.undo.create("<Undefined from: " + self.name + ">")
   , _object
-  , _form = dmz.uiLoader.load("CarrierInspector")
+  , _form = dmz.uiLoader.load("DestroyerInspector")
   , _type = _form.lookup("typeLabel")
   , _name = _form.lookup("nameEdit")
   ;
@@ -47,7 +47,7 @@ dmz.module.subscribe(self, "objectInspector", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
-      module.addInspector(self, _form, CarrierType, function (handle) {
+      module.addInspector(self, _form, DestroyerType, function (handle) {
 
          var name = dmz.object.text(handle, dmz.saeConst.NameAttr)
            , type = dmz.object.type(handle)
@@ -71,7 +71,7 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
-      module.addInit(self, CarrierType, function (handle, type) {
+      module.addInit(self, DestroyerType, function (handle, type) {
 
          if (!dmz.object.text(handle, dmz.saeConst.NameAttr)) {
 
