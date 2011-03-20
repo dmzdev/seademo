@@ -3,26 +3,31 @@ var dmz =
        , defs: require("dmz/runtime/definitions")
        , object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
+       , uiLoader: require("dmz/ui/uiLoader")
+       , uiMessageBox: require('dmz/ui/messageBox')
        , module: require("dmz/runtime/module")
        , undo: require("inspectorUndo")
        }
   // Constants
   , HelicopterType = dmz.objectType.lookup("Helicopter")
-  , TrunRate = (Math.PI * 0.5)
+  , TrunRate = Math.PI * 0.5
   , Speed = 50
   , Forward = dmz.vector.Forward
   , Right = dmz.vector.Right
   , Up = dmz.vector.Up
-  , Lead = self.config.number("target-lead.value", 6)
   // Functions
   , _rotate
   , _newOri
   // Variables
-//  , _helos =
-//    { group: { list: {} }
-//    , list: {}
-//    }
+  , _helos = { count: 0, list: {} }
   ;
+
+(function () {
+
+//   _initOS(OSType);
+//   _initService(ServiceType);
+
+})();
 
 _rotate = function (time, orig, target) {
 
@@ -87,9 +92,14 @@ _newOri = function (obj, time, targetVec) {
 
 dmz.object.create.observe(self, function (handle, type) {
 
+   var obj
+     ;
+
    if (type.isOfType(HelicopterType)) {
 
-      _helos.list[handle] = { handle: handle };
+      obj = { handle: handle };
+      _helos.list[handle] = obj;
+      _helos.count = _helos.list.length;
    }
 });
 
@@ -97,53 +107,20 @@ dmz.object.link.observe(self, dmz.seaConst.NetLink,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    var obj = _helos.list[superHandle];
-   if (obj) { _helos.group[subHandle].list[superHandle] = obj; }
+   if (obj) { obj.target = subHandle; }
 });
 
 
 dmz.object.unlink.observe(self, dmz.seaConst.NetLink,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   delete _helos.group[subHandle].list[superHandle];
    delete _helos.list[superHandle];
+   _helos.count = _helos.list.length;
 });
 
 dmz.time.setRepeatingTimer(self, function (Delta) {
 
-   Object.keys(_helos.group).forEach(function(key) {
+   Object.keys(_helos.list).forEach(function(key) {
 
-      Object.keys(_helos.group[key].list).forEach(function(key) {
-
-         var obj = _helos.group[key].list
-           , handle = obj.handle
-           , pos = dmz.object.position(handle)
-           , vel = dmz.object.velocity(handle)
-           , ori = dmz.object.orientation(handle)
-           , origPos
-           , offset
-           , speed
-           , targetPos
-           , targetOri
-           , targetDir
-           , distance
-           ;
-
-         if (obj.target) {
-
-            targetPos = dmz.object.position(obj.target);
-            targetOri = dmz.object.orientation(obj.target);
-
-            if (targetPos && targetOri) {
-
-               targetPos = targetPos.add(targetOri.transform(Forward.multipyConst(Lead)));
-               offset = targetPos.subtract(pos);
-               targetDir = offset.normalize();
-
-               ori = newOri(obj, Delta, targetDir);
-
-               distance = offset.magnitude ();
-            }
-         }
-      });
    });
 });

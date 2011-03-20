@@ -22,9 +22,9 @@
    <instance name="objectInit"/>
    <instance name="objectInspector"/>
    <instance name="carrierInspector"/>
-    <instance name="destroyerInspector"/>
-    <instance name="helicopterInspector"/>
-    <instance name="submarineInspector"/>
+   <instance name="destroyerInspector"/>
+   <instance name="helicopterInspector"/>
+   <instance name="submarineInspector"/>
    <!-- <instance name="fileMenu"/> -->
    <!-- <instance name="editMenu"/> -->
    <instance name="create"/>
@@ -32,6 +32,7 @@
    <instance name="link"/>
    <instance name="delete"/>
    <instance name="highlight"/>
+   <instance name="helicopter"/>
 </javascript>
 </dmz>
 
