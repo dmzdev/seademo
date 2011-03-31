@@ -1,14 +1,17 @@
 var dmz =
        { saeConst: require("saeConst")
        , defs: require("dmz/runtime/definitions")
+       , matrix: require("dmz/types/matrix")
+       , module: require("dmz/runtime/module")
        , object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
-       , module: require("dmz/runtime/module")
+       , time: require("dmz/runtime/time")
        , undo: require("inspectorUndo")
+       , vector: require("dmz/types/vector")
        }
   // Constants
   , HelicopterType = dmz.objectType.lookup("Helicopter")
-  , TrunRate = (Math.PI * 0.5)
+  , TurnRate = (Math.PI * 0.5)
   , Speed = 50
   , Forward = dmz.vector.Forward
   , Right = dmz.vector.Right
@@ -18,10 +21,11 @@ var dmz =
   , _rotate
   , _newOri
   // Variables
-//  , _helos =
-//    { group: { list: {} }
-//    , list: {}
-//    }
+  , _helos =
+    { group: []
+    , list: []
+    }
+  , _groups = {}
   ;
 
 _rotate = function (time, orig, target) {
@@ -72,9 +76,9 @@ _newOri = function (obj, time, targetVec) {
 
    if (ncross.y < 0.0) { pitch = (Math.PI * 2) - pitch; }
 
-   obj.heading = rotate(time, obj.heading, heading);
+   obj.heading = _rotate(time, obj.heading, heading);
 
-   obj.pitch = rotate(time, obj.pitch, pitch);
+   obj.pitch = _rotate(time, obj.pitch, pitch);
 
    pm = dmz.matrix.create().fromAxisAndAngle(Right, obj.pitch);
 
@@ -93,28 +97,45 @@ dmz.object.create.observe(self, function (handle, type) {
    }
 });
 
-dmz.object.link.observe(self, dmz.seaConst.NetLink,
+dmz.object.link.observe(self, dmz.saeConst.NetLink,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   var obj = _helos.list[superHandle];
-   if (obj) { _helos.group[subHandle].list[superHandle] = obj; }
+   var obj = _helos.list[superHandle]
+     , group = _helos.group[subHandle]
+     ;
+
+   if (obj) {
+
+      obj.target = subHandle;
+
+      if (!group) { group = { list: [] } }
+
+      group.list[superHandle] = obj;
+      _helos.group[subHandle] = group;
+   }
 });
 
 
-dmz.object.unlink.observe(self, dmz.seaConst.NetLink,
+dmz.object.unlink.observe(self, dmz.saeConst.NetLink,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
-   delete _helos.group[subHandle].list[superHandle];
+   var group = _helos.group[subHandle];
+   if (group) { delete group.list[superHandle]; }
    delete _helos.list[superHandle];
 });
 
 dmz.time.setRepeatingTimer(self, function (Delta) {
 
-   Object.keys(_helos.group).forEach(function(key) {
+   var group
+     ;
 
-      Object.keys(_helos.group[key].list).forEach(function(key) {
+   Object.keys(_helos.group).forEach(function(groupKey) {
 
-         var obj = _helos.group[key].list
+      group = _helos.group[groupKey];
+
+      Object.keys(group.list).forEach(function(key) {
+
+         var obj = group.list[key]
            , handle = obj.handle
            , pos = dmz.object.position(handle)
            , vel = dmz.object.velocity(handle)
@@ -133,15 +154,34 @@ dmz.time.setRepeatingTimer(self, function (Delta) {
             targetPos = dmz.object.position(obj.target);
             targetOri = dmz.object.orientation(obj.target);
 
+            if (!targetOri) { targetOri = dmz.matrix.create(); }
+            if (!vel) { vel = dmz.vector.create(0.0, 1.0, 0.0); }
+
+            self.log.error("targetPos: " + targetPos);
+            self.log.error("targetOri: " + targetOri);
+
             if (targetPos && targetOri) {
 
-               targetPos = targetPos.add(targetOri.transform(Forward.multipyConst(Lead)));
+               targetPos = targetPos.add(targetOri.transform(Forward.multiplyConst(Lead)));
                offset = targetPos.subtract(pos);
                targetDir = offset.normalize();
 
-               ori = newOri(obj, Delta, targetDir);
+               ori = _newOri(obj, Delta, targetDir);
 
                distance = offset.magnitude ();
+
+               if (!speed) { speed = vel.magnitude(); }
+
+               if (ori) { obj.dir = ori.transform(Forward); }
+
+               vel = obj.dir.multiplyConst(speed);
+
+               origPos = pos;
+               pos = pos.add(vel.multiplyConst(Delta));
+
+               dmz.object.position(handle, null, pos);
+               if (ori) { dmz.object.orientation(handle, null, ori); }
+               dmz.object.velocity(handle, null, vel);
             }
          }
       });

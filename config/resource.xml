@@ -18,7 +18,6 @@
    <resource name="submarine highlight" file="submarine_invert.png"/>
    <resource name="submarine select" file="submarine_select.png"/>
    <resource name="not ok" file="X.svg"/>
-   <!-- <resource name="infected badge" file="Infected.svg"/> -->
 </resource-map>
 </runtime>
 </dmz>

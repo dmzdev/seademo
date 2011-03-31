@@ -32,7 +32,7 @@
    <instance name="link"/>
    <instance name="delete"/>
    <instance name="highlight"/>
-   <instance name="helicopter"/>
+   <instance name="helicopterMain"/>
 </javascript>
 </dmz>
 
