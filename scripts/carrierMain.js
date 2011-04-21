@@ -1,126 +1,50 @@
 var dmz =
        { saeConst: require("saeConst")
        , defs: require("dmz/runtime/definitions")
+       , matrix: require("dmz/types/matrix")
+       , module: require("dmz/runtime/module")
        , object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
-       , uiLoader: require("dmz/ui/uiLoader")
-       , uiMessageBox: require('dmz/ui/messageBox')
-       , module: require("dmz/runtime/module")
+       , time: require("dmz/runtime/time")
        , undo: require("inspectorUndo")
+       , vector: require("dmz/types/vector")
        }
   // Constants
-  , HelicopterType = dmz.objectType.lookup("Helicopter")
+  , CarrierType = dmz.objectType.lookup("Carrier")
   , TrunRate = Math.PI * 0.5
   , Speed = 50
   , Forward = dmz.vector.Forward
   , Right = dmz.vector.Right
   , Up = dmz.vector.Up
+  , StartDir = dmz.matrix.create().fromAxisAndAngle(Up, Math.PI)
   // Functions
   , _rotate
   , _newOri
   // Variables
-  , _helos = { count: 0, list: {} }
+  , _carriers = { list: {} }
   ;
 
 (function () {
 
-//   _initOS(OSType);
-//   _initService(ServiceType);
-
 })();
-
-_rotate = function (time, orig, target) {
-
-   var result = target
-   ,   diff = target - orig
-   ,   max = time * TurnRate
-   ;
-
-   if (diff > Math.PI) { diff -= Math.PI * 2; }
-   else if (diff < -Math.PI)  { diff += Math.PI * 2; }
-
-   if (Math.abs(diff) > max) {
-
-      if (diff > 0) { result = orig + max; }
-      else { result = orig - max; }
-   }
-
-   return result;
-};
-
-_newOri = function (obj, time, targetVec) {
-
-   var result = dmz.matrix.create()
-     , hvec = dmz.vector.create(targetVec)
-     , heading
-     , hcross
-     , pitch
-     , pcross
-     , ncross
-     , pm
-     ;
-
-   hvec.y = 0.0;
-   hvec = hvec.normalize();
-   heading = Forward.getAngle(hvec);
-
-   hcross = Forward.cross(hvec).normalize();
-
-   if (hcross.y < 0.0) { heading = (Math.PI * 2) - heading; }
-
-   if (heading > Math.PI) { heading = heading - (Math.PI * 2); }
-   else if (heading < -Math.PI) { heading = heading + (Math.PI * 2); }
-
-   pitch = targetVec.getAngle(hvec);
-   pcross = targetVec.cross(hvec).normalize();
-   ncross = hvec.cross(pcross);
-
-   if (ncross.y < 0.0) { pitch = (Math.PI * 2) - pitch; }
-
-   obj.heading = rotate(time, obj.heading, heading);
-
-   obj.pitch = rotate(time, obj.pitch, pitch);
-
-   pm = dmz.matrix.create().fromAxisAndAngle(Right, obj.pitch);
-
-   result = result.fromAxisAndAngle(Up, obj.heading);
-
-   result = result.multiply(pm);
-
-   return result;
-};
-
-dmz.object.create.observe(self, function (handle, type) {
-
-   var obj
-     ;
-
-   if (type.isOfType(HelicopterType)) {
-
-      obj = { handle: handle };
-      _helos.list[handle] = obj;
-      _helos.count = _helos.list.length;
-   }
-});
-
-dmz.object.link.observe(self, dmz.seaConst.NetLink,
-function (linkObjHandle, attrHandle, superHandle, subHandle) {
-
-   var obj = _helos.list[superHandle];
-   if (obj) { obj.target = subHandle; }
-});
-
-
-dmz.object.unlink.observe(self, dmz.seaConst.NetLink,
-function (linkObjHandle, attrHandle, superHandle, subHandle) {
-
-   delete _helos.list[superHandle];
-   _helos.count = _helos.list.length;
-});
 
 dmz.time.setRepeatingTimer(self, function (Delta) {
 
-   Object.keys(_helos.list).forEach(function(key) {
+});
 
-   });
+dmz.module.subscribe(self, "objectInit", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) {
+
+      module.addInit(self, CarrierType, function (handle, type) {
+
+         var obj = { handle: handle };
+
+         _carriers.list[handle] = obj;
+         _carriers.count += 1;
+
+         dmz.object.orientation(handle, null, StartDir);
+//         dmz.object.velocity(handle, null, [0, 0, Speed]);
+      });
+   }
 });

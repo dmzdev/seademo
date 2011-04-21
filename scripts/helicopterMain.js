@@ -16,7 +16,7 @@ var dmz =
   , Forward = dmz.vector.Forward
   , Right = dmz.vector.Right
   , Up = dmz.vector.Up
-  , StartDir = dmz.matrix.create().fromAxisAndAngle(Up, Math.PI)
+  , StartDir = dmz.matrix.create().fromAxisAndAngle(Up, 2*Math.PI)
   , Lead = self.config.number("target-lead.value", 6)
   // Functions
   , _rotate
@@ -152,6 +152,7 @@ dmz.time.setRepeatingTimer(self, function (Delta) {
 
          if (obj.target) {
 
+            self.log.warn("target: " + obj.target);
             targetPos = dmz.object.position(obj.target);
             targetOri = dmz.object.orientation(obj.target);
 
@@ -167,7 +168,7 @@ dmz.time.setRepeatingTimer(self, function (Delta) {
                offset = targetPos.subtract(pos);
                targetDir = offset.normalize();
 
-               ori = _newOri(obj, Delta, targetDir);
+//               ori = _newOri(obj, Delta, targetDir);
 
                distance = offset.magnitude ();
 
@@ -195,8 +196,11 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
       module.addInit(self, HelicopterType, function (handle, type) {
 
+         var vel = StartDir.multiplyConst(Speed);
+         _helos.list[handle] = { handle: handle };
+
          dmz.object.orientation(handle, null, StartDir);
-         dmz.object.velocity(handle, null, [0, 0, Speed]);
+         dmz.object.velocity(handle, null, [Speed, 0, 0]);
       });
    }
 });

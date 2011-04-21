@@ -22,9 +22,6 @@ var dmz =
 
 (function () {
 
-//   _initOS(OSType);
-//   _initService(ServiceType);
-
 })();
 
 
@@ -63,7 +60,7 @@ dmz.module.subscribe(self, "objectInspector", function (Mode, module) {
          else { _name.text(""); }
 
          _object = handle;
-      }); 
+      });
    }
 });
 
@@ -80,7 +77,7 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
                dmz.saeConst.NameAttr,
                type.name() + module.counter());
          }
-      }); 
+      });
    }
 });
 
