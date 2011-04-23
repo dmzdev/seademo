@@ -10,6 +10,8 @@ var dmz =
        }
   // Constants
   , CarrierType = dmz.objectType.lookup("Carrier")
+  , NameAttr = dmz.saeConst.NameAttr
+  , SpeedAttr = dmz.saeConst.SpeedAttr
   // Functions
   // Variables
   , _inUpdate = false
@@ -18,6 +20,7 @@ var dmz =
   , _form = dmz.uiLoader.load("CarrierInspector")
   , _type = _form.lookup("typeLabel")
   , _name = _form.lookup("nameEdit")
+  , _speed = _form.lookup("speedSlider")
   ;
 
 (function () {
@@ -32,7 +35,7 @@ _name.observe(self, "textChanged", function(value, widget) {
       _inUpdate = true;
       _undo.start(widget, "Edit name");
 
-      dmz.object.text(_object, dmz.saeConst.NameAttr, value);
+      dmz.object.text(_object, NameAttr, value);
 
       _undo.stop();
       _inUpdate = false;
@@ -40,14 +43,29 @@ _name.observe(self, "textChanged", function(value, widget) {
 });
 
 
+_speed.observe(self, "valueChanged", function (value, widget) {
+
+   if (_object) {
+
+      _inUpdate = true;
+      _undo.start(widget, "Edit Speed");
+
+      dmz.object.scalar(_object, SpeedAttr, value);
+
+      _undo.stop();
+      _inUpdate = false;
+   }
+});
+
 dmz.module.subscribe(self, "objectInspector", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
 
       module.addInspector(self, _form, CarrierType, function (handle) {
 
-         var name = dmz.object.text(handle, dmz.saeConst.NameAttr)
+         var name = dmz.object.text(handle, NameAttr)
            , type = dmz.object.type(handle)
+           , speed = dmz.object.scalar(handle, SpeedAttr)
            ;
 
          _undo.clear();
@@ -58,6 +76,9 @@ dmz.module.subscribe(self, "objectInspector", function (Mode, module) {
 
          if (name) { _name.text(name); }
          else { _name.text(""); }
+
+         if (speed) { _speed.value(speed); }
+         else { _speed.value(0); }
 
          _object = handle;
       });
@@ -84,4 +105,9 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 dmz.object.text.observe(self, dmz.saeConst.NameAttr, function (handle, attr, value) {
 
    if (!_inUpdate && (handle === _object)) { _name.text(value); }
+});
+
+dmz.object.scalar.observe(self, dmz.saeConst.SpeedAttr, function (handle, attr, value) {
+
+   if (!_inUpdate && (handle === _object)) { _speed.value(value); }
 });

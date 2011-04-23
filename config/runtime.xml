@@ -67,5 +67,13 @@
          </template>
       </canvas-object-basic>
    </object-type>
+   <object-type name="Target" parent="Unknown">
+      <canvas-object/>
+      <canvas-object-basic>
+         <items>
+            <image name="not ok" resource="not ok" isect="false"/>
+         </items>
+      </canvas-object-basic>
+   </object-type>
 </runtime>
 </dmz>

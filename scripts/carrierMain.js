@@ -11,25 +11,42 @@ var dmz =
        }
   // Constants
   , CarrierType = dmz.objectType.lookup("Carrier")
-  , TrunRate = Math.PI * 0.5
-  , Speed = 50
+  , SpeedAttr = dmz.saeConst.SpeedAttr
   , Forward = dmz.vector.Forward
   , Right = dmz.vector.Right
   , Up = dmz.vector.Up
-  , StartDir = dmz.matrix.create().fromAxisAndAngle(Up, Math.PI)
+  , StartDir = dmz.matrix.create().fromAxisAndAngle(Up, 0)
   // Functions
-  , _rotate
-  , _newOri
+  , _move
   // Variables
-  , _carriers = { list: {} }
+  , _carriers = { count: 0, list: {} }
   ;
 
-(function () {
+_move = function (time, obj) {
 
-})();
+   var pos = dmz.object.position(obj.handle)
+     , ori = dmz.object.orientation(obj.handle)
+     , vel
+     , speed = dmz.object.scalar(obj.handle, SpeedAttr)
+     ;
 
-dmz.time.setRepeatingTimer(self, function (Delta) {
+   vel = ori.transform(Forward).multiply(speed);
+   pos = pos.add(vel.multiply(time));
 
+   dmz.object.position(obj.handle, null, pos);
+   dmz.object.velocity(obj.handle, null, vel);
+   dmz.object.orientation(obj.handle, null, ori);
+};
+
+dmz.time.setRepeatingTimer(self, function (time) {
+
+   var keys = Object.keys(_carriers.list)
+     ;
+
+   if (time > 0) {
+
+      keys.forEach(function (key) { _move(time, _carriers.list[key]); });
+   }
 });
 
 dmz.module.subscribe(self, "objectInit", function (Mode, module) {
@@ -43,8 +60,10 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
          _carriers.list[handle] = obj;
          _carriers.count += 1;
 
+         dmz.object.scalar(handle, SpeedAttr, 0);
+         dmz.object.position(handle, null, [0, 0, 0]);
          dmz.object.orientation(handle, null, StartDir);
-//         dmz.object.velocity(handle, null, [0, 0, Speed]);
+         dmz.object.velocity(handle, null, [0, 0, 0]);
       });
    }
 });

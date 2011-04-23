@@ -1,3 +1,5 @@
+var _ = require("underscore")._;
+
 var dmz =
        { saeConst: require("saeConst")
        , defs: require("dmz/runtime/definitions")
@@ -11,92 +13,123 @@ var dmz =
        }
   // Constants
   , HelicopterType = dmz.objectType.lookup("Helicopter")
-  , TurnRate = (Math.PI * 0.5)
-  , Speed = 50
+  , TurnRate = 2 * Math.PI
+  , Speed = 200
   , Forward = dmz.vector.Forward
   , Right = dmz.vector.Right
   , Up = dmz.vector.Up
-  , StartDir = dmz.matrix.create().fromAxisAndAngle(Up, 2*Math.PI)
-  , Lead = self.config.number("target-lead.value", 6)
+  , StartDir = dmz.matrix.create().fromAxisAndAngle(Up, 0)
+  , TargetDelta = self.config.number("target.delta.value", 10)
+  , TargetOffset = self.config.number("target.offset.value", 1000)
   // Functions
   , _rotate
+  , _move
   , _newOri
+  , _newHeading
+  , _nextTarget
+  , _targetPosition
   // Variables
   , _helos =
     { group: []
     , list: []
     }
   , _groups = {}
+  , _targets =
+     { list:
+        [ dmz.vector.create(0.5, 0.0, 0.0)
+        , dmz.vector.create(-0.5, 0.0, -0.5)
+        , dmz.vector.create(0.5, 0.0, -1.0)
+         , dmz.vector.create(-0.5, 0.0, -0.5)
+        ]
+     , scale: dmz.vector.create(1000, 1, 400)
+     }
   ;
 
-_rotate = function (time, orig, target) {
+var _dump = function (obj) { self.log.error(JSON.stringify(obj)); };
 
-   var result = target
-   ,   diff = target - orig
-   ,   max = time * TurnRate
-   ;
+_nextTarget = function (obj) {
 
-   if (diff > Math.PI) { diff -= Math.PI * 2; }
-   else if (diff < -Math.PI)  { diff += Math.PI * 2; }
-
-   if (Math.abs(diff) > max) {
-
-      if (diff > 0) { result = orig + max; }
-      else { result = orig - max; }
-   }
-
-   return result;
+   obj.target += 1;
+   if (obj.target === _targets.list.length) { obj.target = 0; }
 };
 
-_newOri = function (obj, time, targetVec) {
+_targetPosition = function (obj) {
 
-   var result = dmz.matrix.create()
-     , hvec = dmz.vector.create(targetVec)
-     , heading
-     , hcross
-     , pitch
-     , pcross
-     , ncross
-     , pm
+   var masterPos = dmz.object.position(obj.master) || dmz.vector.create()
+     , masterOri = dmz.object.orientation(obj.master) || dmz.matrix.create()
+     , targetPos = _targets.list[obj.target].copy()
+     , scale = _targets.scale
+     , pos
      ;
 
-   hvec.y = 0.0;
-   hvec = hvec.normalize();
-   heading = Forward.getAngle(hvec);
+   targetPos.setXYZ(targetPos.x * scale.x, targetPos.y * scale.y, targetPos.z * scale.z);
 
-   hcross = Forward.cross(hvec).normalize();
+   pos = masterPos.add(masterOri.transform(Forward.multiplyConst(TargetOffset)));
 
-   if (hcross.y < 0.0) { heading = (Math.PI * 2) - heading; }
+   pos = pos.add(masterOri.transform(targetPos));
 
-   if (heading > Math.PI) { heading = heading - (Math.PI * 2); }
-   else if (heading < -Math.PI) { heading = heading + (Math.PI * 2); }
+   dmz.object.position(obj.icon, null, pos);
 
-   pitch = targetVec.getAngle(hvec);
-   pcross = targetVec.cross(hvec).normalize();
-   ncross = hvec.cross(pcross);
+   return pos;
+};
 
-   if (ncross.y < 0.0) { pitch = (Math.PI * 2) - pitch; }
+_newHeading = function (time, dir, ori) {
 
-   obj.heading = _rotate(time, obj.heading, heading);
+   var cdir = ori.transform(dmz.vector.Forward)
+     , tdir = dir.copy()
+     , max = time * TurnRate
+     , angle
+     , sign = 1
+     , result
+     ;
 
-   obj.pitch = _rotate(time, obj.pitch, pitch);
+   cdir.y = 0;
+   cdir = cdir.normalize();
 
-   pm = dmz.matrix.create().fromAxisAndAngle(Right, obj.pitch);
+   tdir.y = 0;
+   tdir = tdir.normalize();
 
-   result = result.fromAxisAndAngle(Up, obj.heading);
+   if (!cdir.isZero() && !tdir.isZero()) {
 
-   result = result.multiply(pm);
+      angle = cdir.getSignedAngle(tdir);
+
+      if (angle < 0) { sign = -1; angle = -angle; }
+
+      if (angle > (max)) { angle = max; }
+
+      angle = (angle * sign) + dmz.vector.Forward.getSignedAngle(cdir);
+
+      result = dmz.matrix.create().fromAxisAndAngle(dmz.vector.Up, angle);
+   }
+   else { result = ori; }
 
    return result;
 };
 
-dmz.object.create.observe(self, function (handle, type) {
+_move = function (time, obj) {
 
-   if (type.isOfType(HelicopterType)) {
+   var pos = dmz.object.position(obj.handle)
+     , ori = dmz.object.orientation(obj.handle)
+     , vel = dmz.object.velocity(obj.handle)
+     , target = _targetPosition(obj)
+     , dir
+     , delta
+     ;
 
-      _helos.list[handle] = { handle: handle };
-   }
-});
+   dir = target.subtract(pos);
+
+   ori = _newHeading(time, dir, ori);
+
+   vel = ori.transform(Forward).multiply(Speed);
+   pos = pos.add(vel.multiply(time));
+
+   delta = pos.subtract(target).magnitude();
+   if (delta < TargetDelta) { _nextTarget(obj); }
+
+   dmz.object.position(obj.handle, null, pos);
+   dmz.object.velocity(obj.handle, null, vel);
+   dmz.object.orientation(obj.handle, null, ori);
+};
 
 dmz.object.link.observe(self, dmz.saeConst.NetLink,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
@@ -107,7 +140,14 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    if (obj) {
 
-      obj.target = subHandle;
+      obj.master = subHandle;
+      obj.target = 0;
+
+      if (!obj.icon) {
+
+         obj.icon = dmz.object.create("Target");
+         dmz.object.activate(obj.icon);
+      }
 
       if (!group) { group = { list: [] } }
 
@@ -115,7 +155,6 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
       _helos.group[subHandle] = group;
    }
 });
-
 
 dmz.object.unlink.observe(self, dmz.saeConst.NetLink,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
@@ -136,56 +175,7 @@ dmz.time.setRepeatingTimer(self, function (Delta) {
 
       Object.keys(group.list).forEach(function(key) {
 
-         var obj = group.list[key]
-           , handle = obj.handle
-           , pos = dmz.object.position(handle)
-           , vel = dmz.object.velocity(handle)
-           , ori = dmz.object.orientation(handle)
-           , origPos
-           , offset
-           , speed = 10
-           , targetPos
-           , targetOri
-           , targetDir
-           , distance
-           ;
-
-         if (obj.target) {
-
-            self.log.warn("target: " + obj.target);
-            targetPos = dmz.object.position(obj.target);
-            targetOri = dmz.object.orientation(obj.target);
-
-//            if (!targetOri) { targetOri = dmz.matrix.create(); }
-//            if (!vel) { vel = Right; }
-
-            self.log.error("targetPos: " + targetPos);
-            self.log.error("targetOri: " + targetOri);
-
-            if (targetPos && targetOri) {
-
-               targetPos = targetPos.add(targetOri.transform(Forward.multiplyConst(Lead)));
-               offset = targetPos.subtract(pos);
-               targetDir = offset.normalize();
-
-//               ori = _newOri(obj, Delta, targetDir);
-
-               distance = offset.magnitude ();
-
-               if (!speed) { speed = vel.magnitude(); }
-
-               if (ori) { obj.dir = ori.transform(Forward); }
-
-               vel = obj.dir.multiplyConst(speed);
-
-               origPos = pos;
-               pos = pos.add(vel.multiplyConst(Delta));
-
-               dmz.object.position(handle, null, pos);
-               if (ori) { dmz.object.orientation(handle, null, ori); }
-               dmz.object.velocity(handle, null, vel);
-            }
-         }
+         if (Delta > 0) { _move(Delta, group.list[key]); }
       });
    });
 });
@@ -196,11 +186,17 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
       module.addInit(self, HelicopterType, function (handle, type) {
 
-         var vel = StartDir.multiplyConst(Speed);
-         _helos.list[handle] = { handle: handle };
+         var obj =
+            { handle: handle
+            , master: 0
+            , target: 0
+            }
+            ;
+
+         _helos.list[handle] = obj;
 
          dmz.object.orientation(handle, null, StartDir);
-         dmz.object.velocity(handle, null, [Speed, 0, 0]);
+         dmz.object.velocity(handle, null, [0, 0, 0]);
       });
    }
 });
