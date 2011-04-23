@@ -28,6 +28,7 @@ var dmz =
   , _newHeading
   , _nextTarget
   , _targetPosition
+  , _updateOffsets
   // Variables
   , _helos =
     { group: []
@@ -43,9 +44,32 @@ var dmz =
         ]
      , scale: dmz.vector.create(1000, 1, 400)
      }
+  , _offsets = {}
   ;
 
 var _dump = function (obj) { self.log.error(JSON.stringify(obj)); };
+
+(function () {
+
+   var x
+     , y
+     , r = 1
+     , theta = 0
+     , TwoPi = 2 * Math.PI
+     , list = []
+     ;
+
+   for (theta = 0; theta < TwoPi; theta += 0.5) {
+
+      x = r * Math.cos(theta);
+      y = r * Math.sin(theta);
+
+      list.push(dmz.vector.create(x, 0, y));
+   }
+
+   _targets.list = list;
+   _targets.scale = dmz.vector.create(400, 1, 200)
+})();
 
 _nextTarget = function (obj) {
 
@@ -60,17 +84,34 @@ _targetPosition = function (obj) {
      , targetPos = _targets.list[obj.target].copy()
      , scale = _targets.scale
      , pos
+     , slotOffset = dmz.vector.create(obj.dx * scale.x, 0, -TargetOffset)
      ;
 
    targetPos.setXYZ(targetPos.x * scale.x, targetPos.y * scale.y, targetPos.z * scale.z);
 
-   pos = masterPos.add(masterOri.transform(Forward.multiplyConst(TargetOffset)));
+//   offsetVec = dmz.vector.create(((obj.slot-1)/2)*(scale.x * 0.5), 0, TargetOffset);
+
+//   self.log.warn("offsetVec: " + offsetVec);
+
+//   pos = masterPos.add(masterOri.transform(Forward.multiplyConst(TargetOffset)));
+   pos = masterPos.add(masterOri.transform(slotOffset));
 
    pos = pos.add(masterOri.transform(targetPos));
 
    dmz.object.position(obj.icon, null, pos);
 
    return pos;
+};
+
+_updateOffsets = function (group) {
+
+   var offsetX = ((group.count - 1) / 2);
+
+   Object.keys(group.list).forEach(function (key) {
+
+      var obj = group.list[key];
+      obj.dx = -offsetX + (obj.slot - 1);
+   });
 };
 
 _newHeading = function (time, dir, ori) {
@@ -149,10 +190,15 @@ function (linkObjHandle, attrHandle, superHandle, subHandle) {
          dmz.object.activate(obj.icon);
       }
 
-      if (!group) { group = { list: [] } }
+      if (!group) { group = { count: 0, list: [] } }
 
       group.list[superHandle] = obj;
+      group.count += 1;
+      obj.slot = group.count;
+
       _helos.group[subHandle] = group;
+
+      _updateOffsets(group);
    }
 });
 
@@ -160,7 +206,12 @@ dmz.object.unlink.observe(self, dmz.saeConst.NetLink,
 function (linkObjHandle, attrHandle, superHandle, subHandle) {
 
    var group = _helos.group[subHandle];
-   if (group) { delete group.list[superHandle]; }
+   if (group) {
+
+      delete group.list[superHandle];
+      group.count -= 1;
+   }
+
    delete _helos.list[superHandle];
 });
 
@@ -190,6 +241,8 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
             { handle: handle
             , master: 0
             , target: 0
+            , slot: 0
+            , dx: 0
             }
             ;
 

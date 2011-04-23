@@ -61,7 +61,7 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
          _carriers.count += 1;
 
          dmz.object.scalar(handle, SpeedAttr, 0);
-         dmz.object.position(handle, null, [0, 0, 0]);
+//         dmz.object.position(handle, null, [0, 0, 0]);
          dmz.object.orientation(handle, null, StartDir);
          dmz.object.velocity(handle, null, [0, 0, 0]);
       });
