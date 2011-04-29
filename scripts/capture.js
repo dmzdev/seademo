@@ -56,6 +56,32 @@ _rayEllipsoidIntersect = function (ray_origin, ray_normal, ellipsoid_origin, ell
    return result;
 }
 
+// def closest_point_on_seg(seg_a, seg_b, circ_pos):
+//    seg_v = seg_b - seg_a
+//    pt_v = circ_pos - seg_a
+//    if seg_v.len() <= 0:
+//       raise ValueError, "Invalid segment length"
+//    seg_v_unit = seg_v / seg_v.len()
+//    proj = pt_v.dot(seg_v_unit)
+//    if proj <= 0:
+//       return seg_a.copy()
+//    if proj >= seg_v.len():
+//       return seg_b.copy()
+//    proj_v = seg_v_unit * proj
+//    closest = proj_v + seg_a
+//    return closest
+//  
+// def segment_circle(seg_a, seg_b, circ_pos, circ_rad):
+//    closest = closest_point_on_seg(seg_a, seg_b, circ_pos)
+//    dist_v = circ_pos - closest
+//    if dist_v.len() > circ_rad:
+//       return vec(0, 0)
+//    if dist_v.len() <= 0:
+//       raise ValueError, "Circle's center is exactly on segment"
+//    offset = dist_v / dist_v.len() * (circ_rad - dist_v.len())
+//    return offset
+//    
+
 dmz.module.subscribe(self, "simulation", function (Mode, module) {
 
    if (Mode === dmz.module.Activate) {
