@@ -66,7 +66,7 @@ _name.observe(self, "textChanged", function(value, widget) {
 
 _heading.observe(self, "valueChanged", function (value, widget) {
 
-   var dial = value + 90;
+   var dial = value;
    if (dial < 0) { dial += 360; }
    if (dial > 359) { dial -= 360; }
 
@@ -77,7 +77,7 @@ _heading.observe(self, "valueChanged", function (value, widget) {
 
 _headingDial.observe(self, "valueChanged", function (value, widget) {
 
-   var heading = value - 90;
+   var heading = value;
    if (heading < 0) { heading += 360; }
    if (heading > 359) { heading -= 360; }
 

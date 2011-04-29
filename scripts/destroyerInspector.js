@@ -63,7 +63,7 @@ dmz.module.subscribe(self, "objectInspector", function (Mode, module) {
          else { _name.text(""); }
 
          _object = handle;
-      }); 
+      });
    }
 });
 
@@ -73,6 +73,7 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
       module.addInit(self, DestroyerType, function (handle, type) {
 
+self.log.warn("DestroyerType: INIT");
          if (!dmz.object.text(handle, dmz.saeConst.NameAttr)) {
 
             dmz.object.text(
@@ -80,7 +81,7 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
                dmz.saeConst.NameAttr,
                type.name() + module.counter());
          }
-      }); 
+      });
    }
 });
 

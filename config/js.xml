@@ -27,6 +27,8 @@
    <instance name="submarineInspector"/>
    <!-- <instance name="fileMenu"/> -->
    <!-- <instance name="editMenu"/> -->
+   <instance name="simulation"/>
+   <instance name="log"/>
    <instance name="create"/>
    <instance name="move"/>
    <instance name="link"/>
@@ -34,6 +36,7 @@
    <instance name="highlight"/>
    <instance name="carrierMain"/>
    <instance name="helicopterMain"/>
+   <instance name="capture"/>
 </javascript>
 </dmz>
 

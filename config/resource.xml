@@ -5,18 +5,18 @@
    <search>
       <path value="./assets/"/>
    </search>
-   <resource name="carrier" file="nimitz.png"/>
-   <resource name="carrier highlight" file="nimitz_invert.png"/>
-   <resource name="carrier select" file="nimitz_select.png"/>
-   <resource name="destroyer" file="arleigh-burke.png"/>
-   <resource name="destroyer highlight" file="arleigh-burke_invert.png"/>
-   <resource name="destroyer select" file="arleigh-burke_select.png"/>
-   <resource name="helicopter" file="sh-60-2.png"/>
-   <resource name="helicopter highlight" file="sh-60-2_invert.png"/>
-   <resource name="helicopter select" file="sh-60-2_select.png"/>
-   <resource name="submarine" file="submarine.png"/>
-   <resource name="submarine highlight" file="submarine_invert.png"/>
-   <resource name="submarine select" file="submarine_select.png"/>
+   <resource name="carrier icon" file="nimitz.png"/>
+   <resource name="carrier icon highlight" file="nimitz_invert.png"/>
+   <resource name="carrier icon select" file="nimitz_select.png"/>
+   <resource name="destroyer icon" file="arleigh-burke.png"/>
+   <resource name="destroyer icon highlight" file="arleigh-burke_invert.png"/>
+   <resource name="destroyer icon select" file="arleigh-burke_select.png"/>
+   <resource name="helicopter icon" file="sh-60-2.png"/>
+   <resource name="helicopter icon highlight" file="sh-60-2_invert.png"/>
+   <resource name="helicopter icon select" file="sh-60-2_select.png"/>
+   <resource name="submarine icon" file="submarine.png"/>
+   <resource name="submarine icon highlight" file="submarine_invert.png"/>
+   <resource name="submarine icon select" file="submarine_select.png"/>
    <resource name="not ok" file="X.svg"/>
 </resource-map>
 </runtime>

@@ -10,10 +10,12 @@ var dmz =
        , time: require("dmz/runtime/time")
        , undo: require("inspectorUndo")
        , vector: require("dmz/types/vector")
+       , util: require("dmz/types/util")
        }
   // Constants
   , HelicopterType = dmz.objectType.lookup("Helicopter")
-  , TurnRate = 2 * Math.PI
+  , CarrierType = dmz.objectType.lookup("Carrier")
+  , TurnRate = Math.PI * 2
   , Speed = 200
   , Forward = dmz.vector.Forward
   , Right = dmz.vector.Right
@@ -24,27 +26,40 @@ var dmz =
   // Functions
   , _rotate
   , _move
+  , _update
+  , _start
+  , _stop
   , _newOri
   , _newHeading
   , _nextTarget
   , _targetPosition
   , _updateOffsets
   // Variables
-  , _helos =
-    { group: []
-    , list: []
-    }
-  , _groups = {}
-  , _targets =
-     { list:
-        [ dmz.vector.create(0.5, 0.0, 0.0)
-        , dmz.vector.create(-0.5, 0.0, -0.5)
-        , dmz.vector.create(0.5, 0.0, -1.0)
-         , dmz.vector.create(-0.5, 0.0, -0.5)
-        ]
-     , scale: dmz.vector.create(1000, 1, 400)
-     }
-  , _offsets = {}
+  , _exports = {}
+  , _helos = []
+  , _carrier
+  , _path =
+//    // Back and Forth
+//    [ dmz.vector.create([0.5, 0.0, 0.0])
+//    , dmz.vector.create([-0.5, 0.0, 0.0])
+//    ]
+    // Sideways V
+    [ dmz.vector.create([-0.5, 0.0, 0.0])
+    , dmz.vector.create([0.5, 0.0, -0.5])
+    , dmz.vector.create([-0.5, 0.0, 0.0])
+    , dmz.vector.create([0.5, 0.0, 0.5])
+    ]
+//    // Box
+//    [ dmz.vector.create([0.5, 0.0, 0.0])
+//    , dmz.vector.create([0.5, 0.0, -0.5])
+//    , dmz.vector.create([-0.5, 0.0, -0.5])
+//    , dmz.vector.create([-0.5, 0.0, 0.0])
+//    , dmz.vector.create([-0.5, 0.0, 0.5])
+//    , dmz.vector.create([0.5, 0.0, 0.5])
+//    ]
+  , _pathWidth = 1000
+  , _pathHeight = 500
+  , _sim
   ;
 
 var _dump = function (obj) { self.log.error(JSON.stringify(obj)); };
@@ -67,36 +82,32 @@ var _dump = function (obj) { self.log.error(JSON.stringify(obj)); };
       list.push(dmz.vector.create(x, 0, y));
    }
 
-   _targets.list = list;
-   _targets.scale = dmz.vector.create(400, 1, 200)
+//   _path = list;
+//   _pathWidth = 400;
+//   _pathHeight = 200;
 })();
 
 _nextTarget = function (obj) {
 
-   obj.target += 1;
-   if (obj.target === _targets.list.length) { obj.target = 0; }
+   dmz.object.addToCounter(obj.handle, dmz.saeConst.TargetAttr, 1);
+   dmz.object.position(obj.handle, dmz.saeConst.TargetAttr, _targetPosition(obj));
 };
 
 _targetPosition = function (obj) {
 
-   var masterPos = dmz.object.position(obj.master) || dmz.vector.create()
-     , masterOri = dmz.object.orientation(obj.master) || dmz.matrix.create()
-     , targetPos = _targets.list[obj.target].copy()
-     , scale = _targets.scale
+   var shipPos = dmz.object.position(_carrier) || dmz.vector.create()
+     , shipOri = dmz.object.orientation(_carrier) || dmz.matrix.create()
+     , offset = dmz.object.vector(obj.handle, dmz.saeConst.OffsetAttr)
+     , target = dmz.object.counter(obj.handle, dmz.saeConst.TargetAttr)
+     , targetPos = _path[target].copy()
      , pos
-     , slotOffset = dmz.vector.create(obj.dx * scale.x, 0, -TargetOffset)
      ;
 
-   targetPos.setXYZ(targetPos.x * scale.x, targetPos.y * scale.y, targetPos.z * scale.z);
+   targetPos.setXYZ(targetPos.x * _pathWidth, targetPos.y, targetPos.z * _pathHeight);
 
-//   offsetVec = dmz.vector.create(((obj.slot-1)/2)*(scale.x * 0.5), 0, TargetOffset);
+   pos = shipPos.add(shipOri.transform(offset));
 
-//   self.log.warn("offsetVec: " + offsetVec);
-
-//   pos = masterPos.add(masterOri.transform(Forward.multiplyConst(TargetOffset)));
-   pos = masterPos.add(masterOri.transform(slotOffset));
-
-   pos = pos.add(masterOri.transform(targetPos));
+   pos = pos.add(shipOri.transform(targetPos));
 
    dmz.object.position(obj.icon, null, pos);
 
@@ -149,86 +160,107 @@ _newHeading = function (time, dir, ori) {
 
 _move = function (time, obj) {
 
-   var pos = dmz.object.position(obj.handle)
-     , ori = dmz.object.orientation(obj.handle)
-     , vel = dmz.object.velocity(obj.handle)
-     , target = _targetPosition(obj)
-     , dir
-     , delta
+   var handle = obj.handle
+     , pos = dmz.object.position(handle)
+     , ori = dmz.object.orientation(handle)
+     , vel = dmz.object.velocity(handle)
+     , target = dmz.object.position(handle, dmz.saeConst.TargetAttr)
+     , speed = dmz.object.scalar(handle, dmz.saeConst.SpeedAttr)
+     , offset = target.subtract(pos)
+     , distance = offset.magnitude()
+     , delta = distance
+     , max = time * speed
      ;
 
-   dir = target.subtract(pos);
+   if (delta > max) { delta = max; }
+   offset = offset.normalize();
 
-   ori = _newHeading(time, dir, ori);
+//   self.log.warn("distance: " + distance);
+   pos = pos.add(offset.multiply(delta));
 
-   vel = ori.transform(Forward).multiply(Speed);
-   pos = pos.add(vel.multiply(time));
+   if (dmz.util.isZero(distance)) { _nextTarget(obj); }
 
-   delta = pos.subtract(target).magnitude();
-   if (delta < TargetDelta) { _nextTarget(obj); }
+   ori = _newHeading(time, offset, ori);
 
-   dmz.object.position(obj.handle, null, pos);
-   dmz.object.velocity(obj.handle, null, vel);
-   dmz.object.orientation(obj.handle, null, ori);
+//   vel = ori.transform(Forward).multiply(speed);
+//   pos = pos.add(vel.multiply(time));
+
+//   delta = pos.subtract(target).magnitude();
+
+//   if (distance < TargetDelta) { _nextTarget(obj); }
+
+   dmz.object.position(handle, null, pos);
+   dmz.object.orientation(handle, null, ori);
+   dmz.object.velocity(handle, null, offset.multiply(speed));
 };
 
-dmz.object.link.observe(self, dmz.saeConst.NetLink,
-function (linkObjHandle, attrHandle, superHandle, subHandle) {
+_update = function (time) {
 
-   var obj = _helos.list[superHandle]
-     , group = _helos.group[subHandle]
-     ;
+   var keys = Object.keys(_helos);
 
-   if (obj) {
+   if (time > 0) {
 
-      obj.master = subHandle;
-      obj.target = 0;
-
-      if (!obj.icon) {
-
-         obj.icon = dmz.object.create("Target");
-         dmz.object.activate(obj.icon);
-      }
-
-      if (!group) { group = { count: 0, list: [] } }
-
-      group.list[superHandle] = obj;
-      group.count += 1;
-      obj.slot = group.count;
-
-      _helos.group[subHandle] = group;
-
-      _updateOffsets(group);
+      keys.forEach(function(key) { _move(time, _helos[key]); });
    }
-});
+};
 
-dmz.object.unlink.observe(self, dmz.saeConst.NetLink,
-function (linkObjHandle, attrHandle, superHandle, subHandle) {
+_start = function () {
 
-   var group = _helos.group[subHandle];
-   if (group) {
+   var keys = Object.keys(_helos);
 
-      delete group.list[superHandle];
-      group.count -= 1;
-   }
+   keys.forEach(function(key) {
 
-   delete _helos.list[superHandle];
-});
+      var obj = _helos[key]
+        , startPos = dmz.object.position(obj.handle, dmz.saeConst.StartAttr)
+        , target = dmz.object.position(_carrier) || dmz.vector.create()
+        , offset = startPos.subtract(target)
+        , speed = Speed + dmz.util.randomInt(5, 25)
+        ;
 
-dmz.time.setRepeatingTimer(self, function (Delta) {
+      dmz.object.position(obj.handle, null, startPos);
+      dmz.object.vector(obj.handle, dmz.saeConst.OffsetAttr, offset);
+      dmz.object.scalar(obj.handle, dmz.saeConst.SpeedAttr, speed);
 
-   var group
-     ;
-
-   Object.keys(_helos.group).forEach(function(groupKey) {
-
-      group = _helos.group[groupKey];
-
-      Object.keys(group.list).forEach(function(key) {
-
-         if (Delta > 0) { _move(Delta, group.list[key]); }
-      });
+      dmz.object.position(obj.handle, dmz.saeConst.TargetAttr, _targetPosition(obj));
    });
+};
+
+_stop = function () {
+
+};
+
+dmz.object.create.observe(self, function (handle, type) {
+
+   if (type.isOfType(CarrierType)) {
+
+      if (dmz.object.hil()) { dmz.object.flag(handle, dmz.object.HILAttribute, false); }
+
+      _carrier = handle;
+      dmz.object.flag(handle, dmz.object.HILAttribute, true);
+   }
+});
+
+dmz.object.position.observe(self, function (handle, attr, pos){
+
+   if (_sim && !_sim.control.isRunning()) {
+
+      var type = dmz.object.type(handle)
+        , ship
+        , offset
+//        , speed = Speed + dmz.util.randomInt(5, 25)
+        ;
+
+      if (type.isOfType(HelicopterType)) {
+
+         ship = dmz.object.position(_carrier) || dmz.vector.create([0 ,0 ,0])
+         offset = pos.subtract(ship)
+
+         dmz.object.position(handle, dmz.saeConst.StartAttr, pos);
+         dmz.object.vector(handle, dmz.saeConst.OffsetAttr, offset);
+//         dmz.object.scalar(obj.handle, dmz.saeConst.SpeedAttr, speed);
+         _targetPosition(_helos[handle])
+      }
+   }
 });
 
 dmz.module.subscribe(self, "objectInit", function (Mode, module) {
@@ -239,18 +271,42 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
          var obj =
             { handle: handle
-            , master: 0
+            , master: _carrier
+            , offset: dmz.vector.create()
             , target: 0
             , slot: 0
             , dx: 0
             }
             ;
 
-         _helos.list[handle] = obj;
+         _helos[handle] = obj;
+
+         obj.icon = dmz.object.create("Target");
+         dmz.object.activate(obj.icon);
+
+         dmz.object.position(handle, null, [0, 0, -1000]);
 
          dmz.object.orientation(handle, null, StartDir);
          dmz.object.velocity(handle, null, [0, 0, 0]);
+         dmz.object.position(handle, dmz.saeConst.StartAttr, dmz.object.position(handle));
+         dmz.object.vector(handle, dmz.saeConst.OffsetAttr, [0, 0 ,0]);
+         dmz.object.scalar(handle, dmz.saeConst.SpeedAttr, 0);
+         dmz.object.counter(handle, dmz.saeConst.TargetAttr, 0);
+         dmz.object.counter.min(handle, dmz.saeConst.TargetAttr, 0);
+         dmz.object.counter.max(handle, dmz.saeConst.TargetAttr, _path.length-1);
+         dmz.object.counter.rollover(handle, dmz.saeConst.TargetAttr, true);
+         dmz.object.position(handle, dmz.saeConst.TargetAttr, _targetPosition(obj));
       });
    }
 });
 
+dmz.module.subscribe(self, "simulation", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) {
+
+      _sim = module;
+      _sim.start(self, _start);
+      _sim.timeSlice(self, _update);
+      _sim.stop(self, _stop);
+   }
+});

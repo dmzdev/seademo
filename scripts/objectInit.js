@@ -10,7 +10,6 @@ var dmz =
   // Variables
   , _exports = {}
   , _table = {}
-  , _selfTable = {}
   , _count = 1
   ;
 
@@ -33,30 +32,39 @@ dmz.object.create.observe(self, function (handle, type) {
 
    var init = _findInit(type);
 
-   if (init && init.func) { init.func(handle, type); }
+   if (init) {
+
+      Object.keys(init.func).forEach(function(key) {
+
+         var func = init.func[key];
+         if (func) { func(handle, type); }
+      });
+   }
 });
 
 dmz.script.observe(self, function (name) {
 
-   var TypeName = _selfTable[name];
+   Object.keys(_table).forEach(function(key) {
 
-   if (TypeName) {
-
-      delete _table[TypeName];
-      delete _selfTable[name];
-   }
+      var init = _table[key];
+      delete init.func[name];
+   });
 });
 
 _exports.addInit = function (obj, type, func) {
 
    if (obj && obj.name && type && func) {
 
-      _table[type.name()] =
-         { func: func 
-         , type: type
-         };
+      var init = _table[type.name()]
+        ;
 
-      _selfTable[obj.name] = type.name();
+      if (!init) {
+
+         init = { func: [], type: type };
+         _table[type.name()] = init;
+      }
+
+      init.func[obj.name] = func;
    }
 };
 

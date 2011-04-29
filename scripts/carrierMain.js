@@ -18,8 +18,9 @@ var dmz =
   , StartDir = dmz.matrix.create().fromAxisAndAngle(Up, 0)
   // Functions
   , _move
+  , _update
   // Variables
-  , _carriers = { count: 0, list: {} }
+  , _carriers = []
   ;
 
 _move = function (time, obj) {
@@ -38,16 +39,20 @@ _move = function (time, obj) {
    dmz.object.orientation(obj.handle, null, ori);
 };
 
-dmz.time.setRepeatingTimer(self, function (time) {
+_update = function (time) {
 
-   var keys = Object.keys(_carriers.list)
+   var keys = Object.keys(_carriers)
      ;
 
    if (time > 0) {
 
-      keys.forEach(function (key) { _move(time, _carriers.list[key]); });
+      keys.forEach(function (key) {
+
+         var obj = _carriers[key];
+                      if (obj) { _move(time, obj); }
+      });
    }
-});
+};
 
 dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
@@ -57,13 +62,20 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
          var obj = { handle: handle };
 
-         _carriers.list[handle] = obj;
-         _carriers.count += 1;
+         _carriers[handle] = obj;
 
          dmz.object.scalar(handle, SpeedAttr, 0);
-//         dmz.object.position(handle, null, [0, 0, 0]);
+         dmz.object.position(handle, null, [0, 0, 0]);
          dmz.object.orientation(handle, null, StartDir);
          dmz.object.velocity(handle, null, [0, 0, 0]);
       });
+   }
+});
+
+dmz.module.subscribe(self, "simulation", function (Mode, module) {
+
+   if (Mode === dmz.module.Activate) {
+
+      module.timeSlice(self, _update);
    }
 });

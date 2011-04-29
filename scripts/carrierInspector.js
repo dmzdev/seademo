@@ -91,6 +91,8 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
       module.addInit(self, CarrierType, function (handle, type) {
 
+   self.log.warn("objectInit: " + type);
+
          if (!dmz.object.text(handle, dmz.saeConst.NameAttr)) {
 
             dmz.object.text(

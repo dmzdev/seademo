@@ -18,52 +18,52 @@
    <object-type name="Neutral"/>
    <object-type name="Hostile"/>
    <object-type name="Carrier" parent="Friend">
-      <icon-pallet resource="carrier"/>
+      <icon-pallet resource="carrier icon"/>
       <canvas-object/>
       <canvas-object-basic>
          <template name="icon">
-            <var name="base" value="carrier"/>
-            <var name="selected" value="carrier select"/>
-            <var name="highlight" value="carrier highlight"/>
+            <var name="base" value="carrier icon"/>
+            <var name="selected" value="carrier icon select"/>
+            <var name="highlight" value="carrier icon highlight"/>
          </template>
       </canvas-object-basic>
    </object-type>
    <object-type name="Destroyer" parent="Friend">
-      <icon-pallet resource="destroyer"/>
+      <icon-pallet resource="destroyer icon"/>
       <link-list>
          <object-type name="Carrier"/>
       </link-list>
       <canvas-object/>
       <canvas-object-basic>
          <template name="icon">
-            <var name="base" value="destroyer"/>
-            <var name="selected" value="destroyer select"/>
-            <var name="highlight" value="destroyer highlight"/>
+            <var name="base" value="destroyer icon"/>
+            <var name="selected" value="destroyer icon select"/>
+            <var name="highlight" value="destroyer icon highlight"/>
          </template>
       </canvas-object-basic>
    </object-type>
    <object-type name="Helicopter" parent="Friend">
-      <icon-pallet resource="helicopter"/>
+      <icon-pallet resource="helicopter icon"/>
       <link-list>
          <object-type name="Carrier"/>
       </link-list>
       <canvas-object/>
       <canvas-object-basic>
          <template name="icon">
-            <var name="base" value="helicopter"/>
-            <var name="selected" value="helicopter select"/>
-            <var name="highlight" value="helicopter highlight"/>
+            <var name="base" value="helicopter icon"/>
+            <var name="selected" value="helicopter icon select"/>
+            <var name="highlight" value="helicopter icon highlight"/>
          </template>
       </canvas-object-basic>
    </object-type>
    <object-type name="Submarine" parent="Unknown">
-      <icon-pallet resource="submarine"/>
+      <icon-pallet resource="submarine icon"/>
       <canvas-object/>
       <canvas-object-basic>
          <template name="icon">
-            <var name="base" value="submarine"/>
-            <var name="selected" value="submarine select"/>
-            <var name="highlight" value="submarine highlight"/>
+            <var name="base" value="submarine icon"/>
+            <var name="selected" value="submarine icon select"/>
+            <var name="highlight" value="submarine icon highlight"/>
          </template>
       </canvas-object-basic>
    </object-type>
