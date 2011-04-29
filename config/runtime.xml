@@ -13,6 +13,7 @@
    <object-type name="Tool Link Node" parent="Tool">
       <canvas-object/>
    </object-type>
+   <object-type name="Equipment"/>
    <object-type name="Unknown"/>
    <object-type name="Friend"/>
    <object-type name="Neutral"/>
@@ -73,6 +74,20 @@
          <items>
             <image name="not ok" resource="not ok" isect="false"/>
          </items>
+      </canvas-object-basic>
+   </object-type>
+   <object-type name="Sensor" parent="Equipment">
+      <canvas-object/>
+      <canvas-object-basic>
+         <items>
+            <ellipse name="sensor">
+               <radius value="250"/>
+<!--               <size width="100" height="200"/>-->
+            </ellipse>
+         </items>
+         <ellipse>
+            <item name="sensor" attribute=""/>
+         </ellipse>
       </canvas-object-basic>
    </object-type>
 </runtime>

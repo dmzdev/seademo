@@ -39,16 +39,16 @@ var dmz =
   , _helos = []
   , _carrier
   , _path =
-//    // Back and Forth
-//    [ dmz.vector.create([0.5, 0.0, 0.0])
-//    , dmz.vector.create([-0.5, 0.0, 0.0])
-//    ]
-    // Sideways V
-    [ dmz.vector.create([-0.5, 0.0, 0.0])
-    , dmz.vector.create([0.5, 0.0, -0.5])
+    // Back and Forth
+    [ dmz.vector.create([0.5, 0.0, 0.0])
     , dmz.vector.create([-0.5, 0.0, 0.0])
-    , dmz.vector.create([0.5, 0.0, 0.5])
     ]
+//    // Sideways V
+//    [ dmz.vector.create([-0.5, 0.0, 0.0])
+//    , dmz.vector.create([0.5, 0.0, -0.5])
+//    , dmz.vector.create([-0.5, 0.0, 0.0])
+//    , dmz.vector.create([0.5, 0.0, 0.5])
+//    ]
 //    // Box
 //    [ dmz.vector.create([0.5, 0.0, 0.0])
 //    , dmz.vector.create([0.5, 0.0, -0.5])
@@ -242,15 +242,17 @@ dmz.object.create.observe(self, function (handle, type) {
 
 dmz.object.position.observe(self, function (handle, attr, pos){
 
-   if (_sim && !_sim.control.isRunning()) {
 
-      var type = dmz.object.type(handle)
-        , ship
-        , offset
-//        , speed = Speed + dmz.util.randomInt(5, 25)
-        ;
+   var type = dmz.object.type(handle)
+     , obj
+     , ship
+     , offset
+//     , speed = Speed + dmz.util.randomInt(5, 25)
+     ;
 
-      if (type.isOfType(HelicopterType)) {
+   if (type.isOfType(HelicopterType)) {
+
+      if (_sim && !_sim.control.isRunning()) {
 
          ship = dmz.object.position(_carrier) || dmz.vector.create([0 ,0 ,0])
          offset = pos.subtract(ship)
@@ -258,7 +260,7 @@ dmz.object.position.observe(self, function (handle, attr, pos){
          dmz.object.position(handle, dmz.saeConst.StartAttr, pos);
          dmz.object.vector(handle, dmz.saeConst.OffsetAttr, offset);
 //         dmz.object.scalar(obj.handle, dmz.saeConst.SpeedAttr, speed);
-         _targetPosition(_helos[handle])
+         _targetPosition(_helos[handle]);
       }
    }
 });
@@ -284,7 +286,7 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
          obj.icon = dmz.object.create("Target");
          dmz.object.activate(obj.icon);
 
-         dmz.object.position(handle, null, [0, 0, -1000]);
+//         dmz.object.position(handle, null, [0, 0, -1000]);
 
          dmz.object.orientation(handle, null, StartDir);
          dmz.object.velocity(handle, null, [0, 0, 0]);

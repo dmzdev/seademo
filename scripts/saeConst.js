@@ -3,6 +3,7 @@ var util = require("dmz/types/util")
   ;
 
 util.defineConst(exports, "NetLink", defs.createNamedHandle("Network Link"));
+util.defineConst(exports, "EquipmentLink", defs.createNamedHandle("Equipment Link"));
 util.defineConst(exports, "NameAttr", defs.createNamedHandle("Name"));
 util.defineConst(exports, "TargetAttr", defs.createNamedHandle("Target"));
 util.defineConst(exports, "StartAttr", defs.createNamedHandle("Start"));

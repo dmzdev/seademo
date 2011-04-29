@@ -36,6 +36,7 @@
    <instance name="highlight"/>
    <instance name="carrierMain"/>
    <instance name="helicopterMain"/>
+   <instance name="sensor"/>
    <instance name="capture"/>
 </javascript>
 </dmz>
