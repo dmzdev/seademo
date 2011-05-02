@@ -16,6 +16,7 @@ dmz.object.create.observe(self, function (handle, type) {
 
       var sensor = dmz.object.create(SensorType);
       dmz.object.position(sensor, null, dmz.object.position(handle));
+      dmz.object.scalar(sensor, dmz.saeConst.RadiusAttr, 250);
       dmz.object.activate(sensor);
 
       dmz.object.link(dmz.saeConst.EquipmentLink, handle, sensor);

@@ -39,26 +39,26 @@ var dmz =
   , _helos = []
   , _carrier
   , _path =
-    // Back and Forth
-    [ dmz.vector.create([0.5, 0.0, 0.0])
-    , dmz.vector.create([-0.5, 0.0, 0.0])
-    ]
+//    // Back and Forth
+//    [ dmz.vector.create([0.5, 0.0, 0.0])
+//    , dmz.vector.create([-0.5, 0.0, 0.0])
+//    ]
 //    // Sideways V
 //    [ dmz.vector.create([-0.5, 0.0, 0.0])
 //    , dmz.vector.create([0.5, 0.0, -0.5])
 //    , dmz.vector.create([-0.5, 0.0, 0.0])
 //    , dmz.vector.create([0.5, 0.0, 0.5])
 //    ]
-//    // Box
-//    [ dmz.vector.create([0.5, 0.0, 0.0])
-//    , dmz.vector.create([0.5, 0.0, -0.5])
-//    , dmz.vector.create([-0.5, 0.0, -0.5])
-//    , dmz.vector.create([-0.5, 0.0, 0.0])
-//    , dmz.vector.create([-0.5, 0.0, 0.5])
-//    , dmz.vector.create([0.5, 0.0, 0.5])
-//    ]
-  , _pathWidth = 1000
-  , _pathHeight = 500
+    // Box
+    [ dmz.vector.create([0.5, 0.0, 0.0])
+    , dmz.vector.create([0.5, 0.0, -0.5])
+    , dmz.vector.create([-0.5, 0.0, -0.5])
+    , dmz.vector.create([-0.5, 0.0, 0.0])
+    , dmz.vector.create([-0.5, 0.0, 0.5])
+    , dmz.vector.create([0.5, 0.0, 0.5])
+    ]
+  , _pathWidth = 800
+  , _pathHeight = 200
   , _sim
   ;
 
