@@ -14,8 +14,8 @@ var dmz =
   , _form = dmz.uiLoader.load("LogForm")
   , _dock = dmz.main.createDock
     (DockName
-    , { area: dmz.uiConst.BottomToolBarArea
-      , allowedAreas: [dmz.uiConst.BottomToolBarArea]
+    , { area: dmz.uiConst.BottomDockWidgetArea
+      , allowedAreas: [dmz.uiConst.BottomDockWidgetArea, dmz.uiConst.TopDockWidgetArea]
       , floating: true
       , visible: true
       }

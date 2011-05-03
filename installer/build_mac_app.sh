@@ -16,7 +16,7 @@ cp $DEPTH/depend/Qt/imageformats/libqjpeg.dylib $DEPTH/SEADEMO.app/Contents/Fram
 cp $DEPTH/depend/Qt/imageformats/libqtiff.dylib $DEPTH/SEADEMO.app/Contents/Frameworks/Qt/plugins/imageformats
 cp $DEPTH/depend/Qt/imageformats/libqsvg.dylib $DEPTH/SEADEMO.app/Contents/Frameworks/Qt/plugins/imageformats
 if [ -d $DEPTH/depend/QtGui.framework/Versions/4/Resources/qt_menu.nib ] ; then
-cp -R $DEPTH/depend/QtGui.framework/Versions/4/Resources/qt_menu.nib $DEPTH/CSS.app/Contents/Resources
+cp -R $DEPTH/depend/QtGui.framework/Versions/4/Resources/qt_menu.nib $DEPTH/SEADEMO.app/Contents/Resources
 fi
 cp $DEPTH/depend/v8/lib/libv8.dylib $DEPTH/SEADEMO.app/Contents/Frameworks/v8/
 TARGET=$DEPTH/SEADEMO-`cat $DEPTH/tmp/macos-opt/seademoapp/buildnumber.txt`.dmg

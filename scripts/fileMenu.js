@@ -11,8 +11,8 @@ var dmz =
        , zip: require("dmz/system/zip")
        }
   // Constants
-  , CSSFile = "css.xml"
-  , FileExt = ".csdf"
+  , SEAFile = "sea.xml"
+  , FileExt = ".seadf"
   // Functions
   , _reset
   , _save
@@ -63,8 +63,8 @@ _save = function (file) {
    if (archive) {
 
       list = 
-         [ {name: dmz.zip.ManifestFileName, config: dmz.zip.manifest (CSSFile)}
-         , {name: CSSFile, config: archive}
+         [ {name: dmz.zip.ManifestFileName, config: dmz.zip.manifest (SEAFile)}
+         , {name: SEAFile, config: archive}
          ];
 
       if (_attack) { list = list.concat(_attack.save()); }
@@ -100,7 +100,7 @@ dmz.main.addMenu (self, "&File", "Open", { shortcut: "open" }, function () {
 
       if (_attack) { _attack.load(file); }
 
-      data = dmz.io.read({archive: file, file: CSSFile, log: self.log});
+      data = dmz.io.read({archive: file, file: SEAFile, log: self.log});
 
       if (data) {
 
@@ -135,7 +135,7 @@ function () {
      ;
 
    name = dmz.fileDialog.getSaveFileName(
-      { caption: "Save file", filter: "Data File (*.csdf)" },
+      { caption: "Save file", filter: "Data File (*"+FileExt")" },
       dmz.main.window());
 
    if (name) {

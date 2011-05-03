@@ -20,6 +20,7 @@
    <path value="../js/scripts"/>
    <instance name="scriptTable"/>
    <instance name="objectInit"/>
+   <instance name="simulation"/>
    <instance name="objectInspector"/>
    <instance name="carrierInspector"/>
    <instance name="destroyerInspector"/>
@@ -27,7 +28,6 @@
    <instance name="submarineInspector"/>
    <!-- <instance name="fileMenu"/> -->
    <!-- <instance name="editMenu"/> -->
-   <instance name="simulation"/>
    <instance name="log"/>
    <instance name="create"/>
    <instance name="move"/>

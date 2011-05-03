@@ -28,16 +28,8 @@
 <main-window>
    <dock-windows>
       <group area="left">
-         <widget
-            name="dmzQtPluginButtonToChannel"
-            title="Tools"
-         >
-         </widget>
-         <widget
-            name="icon-pallet"
-            title="Object Pallet"
-         >
-         </widget>
+         <widget name="dmzQtPluginButtonToChannel" title="Tools"/>
+         <widget name="icon-pallet" title="Object Pallet"/>
       </group>
    </dock-windows>
 </main-window>

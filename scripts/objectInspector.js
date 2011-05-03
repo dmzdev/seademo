@@ -22,8 +22,10 @@ var dmz =
   , _form = dmz.uiLoader.load("ObjectInspector")
   , _dock = dmz.main.createDock
     (DockName
-    , { area: dmz.uiConst.LeftToolBarArea
-      , allowedAreas: [dmz.uiConst.NoToolBarArea]
+    , { area: dmz.uiConst.RightDockWidgetArea
+      , allowedAreas: [dmz.uiConst.AllDockWidgetAreas]
+      , floating: true
+      , visible: true
       }
     , _form
     )

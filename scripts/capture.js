@@ -17,7 +17,11 @@ var dmz =
   , GraphForm = dmz.ui.loader.load("GraphForm")
   , GraphDock = dmz.ui.mainWindow.createDock
      ( "Graph"
-     , { area: dmz.ui.consts.BottomDockWidgetArea, floating: true }
+     , { area: dmz.ui.consts.BottomDockWidgetArea
+       , allowedAreas: [dmz.ui.consts.BottomDockWidgetArea, dmz.ui.consts.TopDockWidgetArea]
+       , floating: true
+       , visible: true
+       }
      , GraphForm
      )
   , graphView = dmz.graphlib.createXYGraph

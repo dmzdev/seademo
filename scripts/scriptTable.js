@@ -18,10 +18,10 @@ var dmz =
   , _table = _form.lookup("table")
   , _dock = dmz.main.createDock
        ( DockName
-       , { area: dmz.uiConst.RightToolBarArea
-         , allowedAreas: [dmz.uiConst.NoToolBarArea]
+       , { area: dmz.uiConst.RightDockWidgetArea
+         , allowedAreas: [dmz.uiConst.NoDockWidgetArea]
          , floating: true
-         , visible: true
+         , visible: false
          }
        , _form
        )
