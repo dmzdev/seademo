@@ -1,5 +1,5 @@
 var dmz =
-      { consts: require("saeConst")
+      { consts: require("seaConst")
       , data: require("dmz/runtime/data")
       , defs: require("dmz/runtime/definitions")
       , mask: require("dmz/types/mask")

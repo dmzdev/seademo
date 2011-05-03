@@ -1,5 +1,5 @@
 var dmz =
-       { saeConst: require("saeConst")
+       { seaConst: require("seaConst")
        , object: require("dmz/components/object")
        , uiConst: require("dmz/ui/consts")
        , uiLoader: require("dmz/ui/uiLoader")
@@ -59,7 +59,7 @@ dmz.object.flag.observe(self, dmz.object.SelectAttribute, function (handle, attr
 
       if (state) {
 
-         state = state.unset(dmz.saeConst.Select);
+         state = state.unset(dmz.seaConst.Select);
          dmz.object.state(handle, null, state);
       }
 
@@ -74,7 +74,7 @@ dmz.object.flag.observe(self, dmz.object.SelectAttribute, function (handle, attr
 
       if (state) {
 
-         state = state.or(dmz.saeConst.Select);
+         state = state.or(dmz.seaConst.Select);
          dmz.object.state(handle, null, state);
       }
 

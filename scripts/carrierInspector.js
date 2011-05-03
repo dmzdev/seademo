@@ -1,5 +1,5 @@
 var dmz =
-       { saeConst: require("saeConst")
+       { seaConst: require("seaConst")
        , defs: require("dmz/runtime/definitions")
        , object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
@@ -10,8 +10,8 @@ var dmz =
        }
   // Constants
   , CarrierType = dmz.objectType.lookup("Carrier")
-  , NameAttr = dmz.saeConst.NameAttr
-  , SpeedAttr = dmz.saeConst.SpeedAttr
+  , NameAttr = dmz.seaConst.NameAttr
+  , SpeedAttr = dmz.seaConst.SpeedAttr
   // Functions
   // Variables
   , _inUpdate = false
@@ -93,23 +93,23 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
    self.log.warn("objectInit: " + type);
 
-         if (!dmz.object.text(handle, dmz.saeConst.NameAttr)) {
+         if (!dmz.object.text(handle, dmz.seaConst.NameAttr)) {
 
             dmz.object.text(
                handle,
-               dmz.saeConst.NameAttr,
+               dmz.seaConst.NameAttr,
                type.name() + module.counter());
          }
       });
    }
 });
 
-dmz.object.text.observe(self, dmz.saeConst.NameAttr, function (handle, attr, value) {
+dmz.object.text.observe(self, dmz.seaConst.NameAttr, function (handle, attr, value) {
 
    if (!_inUpdate && (handle === _object)) { _name.text(value); }
 });
 
-dmz.object.scalar.observe(self, dmz.saeConst.SpeedAttr, function (handle, attr, value) {
+dmz.object.scalar.observe(self, dmz.seaConst.SpeedAttr, function (handle, attr, value) {
 
    if (!_inUpdate && (handle === _object)) { _speed.value(value); }
 });

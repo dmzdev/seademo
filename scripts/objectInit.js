@@ -1,5 +1,5 @@
 var dmz =
-       { saeConst: require("saeConst")
+       { seaConst: require("seaConst")
        , object: require("dmz/components/object")
        , module: require("dmz/runtime/module")
        , script: require("dmz/runtime/script")

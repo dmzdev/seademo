@@ -1,5 +1,5 @@
 var dmz =
-       { saeConst: require("saeConst")
+       { seaConst: require("seaConst")
        , defs: require("dmz/runtime/definitions")
        , matrix: require("dmz/types/matrix")
        , module: require("dmz/runtime/module")
@@ -11,7 +11,7 @@ var dmz =
        }
   // Constants
   , CarrierType = dmz.objectType.lookup("Carrier")
-  , SpeedAttr = dmz.saeConst.SpeedAttr
+  , SpeedAttr = dmz.seaConst.SpeedAttr
   , Forward = dmz.vector.Forward
   , Right = dmz.vector.Right
   , Up = dmz.vector.Up

@@ -1,5 +1,5 @@
 var dmz =
-       { saeConst: require("saeConst")
+       { seaConst: require("seaConst")
        , defs: require("dmz/runtime/definitions")
        , object: require("dmz/components/object")
        , objectType: require("dmz/runtime/objectType")
@@ -57,7 +57,7 @@ _name.observe(self, "textChanged", function(value, widget) {
       _inUpdate = true;
       _undo.start(widget, "Edit name");
 
-      dmz.object.text(_object, dmz.saeConst.NameAttr, value);
+      dmz.object.text(_object, dmz.seaConst.NameAttr, value);
 
       _undo.stop();
       _inUpdate = false;
@@ -92,7 +92,7 @@ dmz.module.subscribe(self, "objectInspector", function (Mode, module) {
 
       module.addInspector(self, _form, SubmarineType, function (handle) {
 
-         var name = dmz.object.text(handle, dmz.saeConst.NameAttr)
+         var name = dmz.object.text(handle, dmz.seaConst.NameAttr)
            , type = dmz.object.type(handle)
            ;
 
@@ -116,18 +116,18 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
       module.addInit(self, SubmarineType, function (handle, type) {
 
-         if (!dmz.object.text(handle, dmz.saeConst.NameAttr)) {
+         if (!dmz.object.text(handle, dmz.seaConst.NameAttr)) {
 
             dmz.object.text(
                handle,
-               dmz.saeConst.NameAttr,
+               dmz.seaConst.NameAttr,
                type.name() + module.counter());
          }
       });
    }
 });
 
-dmz.object.text.observe(self, dmz.saeConst.NameAttr, function (handle, attr, value) {
+dmz.object.text.observe(self, dmz.seaConst.NameAttr, function (handle, attr, value) {
 
    if (!_inUpdate && (handle === _object)) { _name.text(value); }
 });

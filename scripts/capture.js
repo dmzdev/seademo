@@ -1,5 +1,5 @@
 var dmz =
-       { saeConst: require("saeConst")
+       { seaConst: require("seaConst")
        , file: require("dmz/system/file")
        , module: require("dmz/runtime/module")
        , vector: require("dmz/types/vector")
@@ -97,7 +97,7 @@ _intersectTargets = function (x1, y1, x2, y2) {
 
    for (ix = 0; ix < len; ix++) {
 
-      r = dmz.object.scalar(_targets[ix], dmz.saeConst.RadiusAttr);
+      r = dmz.object.scalar(_targets[ix], dmz.seaConst.RadiusAttr);
       pos = dmz.object.position(_targets[ix]);
       x3 = pos.x;
       y3 = -pos.z;

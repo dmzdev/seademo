@@ -1,7 +1,7 @@
 var _ = require("underscore")._;
 
 var dmz =
-       { saeConst: require("saeConst")
+       { seaConst: require("seaConst")
        , defs: require("dmz/runtime/definitions")
        , matrix: require("dmz/types/matrix")
        , module: require("dmz/runtime/module")
@@ -89,16 +89,16 @@ var _dump = function (obj) { self.log.error(JSON.stringify(obj)); };
 
 _nextTarget = function (obj) {
 
-   dmz.object.addToCounter(obj.handle, dmz.saeConst.TargetAttr, 1);
-   dmz.object.position(obj.handle, dmz.saeConst.TargetAttr, _targetPosition(obj));
+   dmz.object.addToCounter(obj.handle, dmz.seaConst.TargetAttr, 1);
+   dmz.object.position(obj.handle, dmz.seaConst.TargetAttr, _targetPosition(obj));
 };
 
 _targetPosition = function (obj) {
 
    var shipPos = dmz.object.position(_carrier) || dmz.vector.create()
      , shipOri = dmz.object.orientation(_carrier) || dmz.matrix.create()
-     , offset = dmz.object.vector(obj.handle, dmz.saeConst.OffsetAttr)
-     , target = dmz.object.counter(obj.handle, dmz.saeConst.TargetAttr)
+     , offset = dmz.object.vector(obj.handle, dmz.seaConst.OffsetAttr)
+     , target = dmz.object.counter(obj.handle, dmz.seaConst.TargetAttr)
      , targetPos = _path[target].copy()
      , pos
      ;
@@ -164,8 +164,8 @@ _move = function (time, obj) {
      , pos = dmz.object.position(handle)
      , ori = dmz.object.orientation(handle)
      , vel = dmz.object.velocity(handle)
-     , target = dmz.object.position(handle, dmz.saeConst.TargetAttr)
-     , speed = dmz.object.scalar(handle, dmz.saeConst.SpeedAttr)
+     , target = dmz.object.position(handle, dmz.seaConst.TargetAttr)
+     , speed = dmz.object.scalar(handle, dmz.seaConst.SpeedAttr)
      , offset = target.subtract(pos)
      , distance = offset.magnitude()
      , delta = distance
@@ -211,17 +211,17 @@ _start = function () {
    keys.forEach(function(key) {
 
       var obj = _helos[key]
-        , startPos = dmz.object.position(obj.handle, dmz.saeConst.StartAttr)
+        , startPos = dmz.object.position(obj.handle, dmz.seaConst.StartAttr)
         , target = dmz.object.position(_carrier) || dmz.vector.create()
         , offset = startPos.subtract(target)
         , speed = Speed + dmz.util.randomInt(5, 25)
         ;
 
       dmz.object.position(obj.handle, null, startPos);
-      dmz.object.vector(obj.handle, dmz.saeConst.OffsetAttr, offset);
-      dmz.object.scalar(obj.handle, dmz.saeConst.SpeedAttr, speed);
+      dmz.object.vector(obj.handle, dmz.seaConst.OffsetAttr, offset);
+      dmz.object.scalar(obj.handle, dmz.seaConst.SpeedAttr, speed);
 
-      dmz.object.position(obj.handle, dmz.saeConst.TargetAttr, _targetPosition(obj));
+      dmz.object.position(obj.handle, dmz.seaConst.TargetAttr, _targetPosition(obj));
    });
 };
 
@@ -257,9 +257,9 @@ dmz.object.position.observe(self, function (handle, attr, pos){
          ship = dmz.object.position(_carrier) || dmz.vector.create([0 ,0 ,0])
          offset = pos.subtract(ship)
 
-         dmz.object.position(handle, dmz.saeConst.StartAttr, pos);
-         dmz.object.vector(handle, dmz.saeConst.OffsetAttr, offset);
-//         dmz.object.scalar(obj.handle, dmz.saeConst.SpeedAttr, speed);
+         dmz.object.position(handle, dmz.seaConst.StartAttr, pos);
+         dmz.object.vector(handle, dmz.seaConst.OffsetAttr, offset);
+//         dmz.object.scalar(obj.handle, dmz.seaConst.SpeedAttr, speed);
          _targetPosition(_helos[handle]);
       }
    }
@@ -290,14 +290,14 @@ dmz.module.subscribe(self, "objectInit", function (Mode, module) {
 
          dmz.object.orientation(handle, null, StartDir);
          dmz.object.velocity(handle, null, [0, 0, 0]);
-         dmz.object.position(handle, dmz.saeConst.StartAttr, dmz.object.position(handle));
-         dmz.object.vector(handle, dmz.saeConst.OffsetAttr, [0, 0 ,0]);
-         dmz.object.scalar(handle, dmz.saeConst.SpeedAttr, 0);
-         dmz.object.counter(handle, dmz.saeConst.TargetAttr, 0);
-         dmz.object.counter.min(handle, dmz.saeConst.TargetAttr, 0);
-         dmz.object.counter.max(handle, dmz.saeConst.TargetAttr, _path.length-1);
-         dmz.object.counter.rollover(handle, dmz.saeConst.TargetAttr, true);
-         dmz.object.position(handle, dmz.saeConst.TargetAttr, _targetPosition(obj));
+         dmz.object.position(handle, dmz.seaConst.StartAttr, dmz.object.position(handle));
+         dmz.object.vector(handle, dmz.seaConst.OffsetAttr, [0, 0 ,0]);
+         dmz.object.scalar(handle, dmz.seaConst.SpeedAttr, 0);
+         dmz.object.counter(handle, dmz.seaConst.TargetAttr, 0);
+         dmz.object.counter.min(handle, dmz.seaConst.TargetAttr, 0);
+         dmz.object.counter.max(handle, dmz.seaConst.TargetAttr, _path.length-1);
+         dmz.object.counter.rollover(handle, dmz.seaConst.TargetAttr, true);
+         dmz.object.position(handle, dmz.seaConst.TargetAttr, _targetPosition(obj));
       });
    }
 });
