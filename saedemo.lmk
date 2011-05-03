@@ -1,5 +1,0 @@
-require "qtshell"
-
-qtshell.set_up ("saedemo")
---lmk.add_files ({"saedemo.rc"},{win32 = true})
-
