@@ -100,6 +100,11 @@ _exports.stop = function (obj, func) {
    if (obj && obj.name) { _stopTable[obj.name] = func; }
 };
 
+_exports.reset = function (obj, func) {
+
+   if (obj && obj.name) { _resetTable[obj.name] = func; }
+};
+
 _exports.control = {}
 
 _exports.control.start = function () {

@@ -5,9 +5,11 @@ var dmz =
        , dock: require("dmz/ui/dockWidget")
        , module: require("dmz/runtime/module")
        , file: require("dmz/system/file")
+       , fileDialog: require("dmz/ui/fileDialog")
        }
   // Constants
   , DockName = "Data Log"
+  , FileExt = ".csv"
   // Functions
   // Variables
   , _exports = {}
@@ -25,6 +27,34 @@ var dmz =
   ;
 
 self.shutdown = function () { dmz.main.removeDock(DockName); };
+
+_form.observe(self, "exportButton", "clicked", function (button) {
+
+   var name
+     , split
+     ;
+
+   name = dmz.fileDialog.getSaveFileName(
+      { caption: "Save file", filter: "Data File (*" + FileExt + ")" },
+      dmz.main.window());
+
+   if (name) {
+
+      split = dmz.file.split(name);
+
+      if (split && (split.ext != FileExt)) {
+
+         name = name + FileExt;
+
+         if (dmz.file.valid(name)) {
+
+            self.log.warn("File:", name, "already exists.");
+         }
+      }
+
+      _exports.save(name);
+   }
+});
 
 _exports.clear = function () { _log.clear(); }
 

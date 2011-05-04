@@ -29,6 +29,7 @@ var dmz =
   , _update
   , _start
   , _stop
+  , _reset
   , _newOri
   , _newHeading
   , _nextTarget
@@ -97,8 +98,8 @@ _targetPosition = function (obj) {
 
    var shipPos = dmz.object.position(_carrier) || dmz.vector.create()
      , shipOri = dmz.object.orientation(_carrier) || dmz.matrix.create()
-     , offset = dmz.object.vector(obj.handle, dmz.seaConst.OffsetAttr)
-     , target = dmz.object.counter(obj.handle, dmz.seaConst.TargetAttr)
+     , offset = dmz.object.vector(obj.handle, dmz.seaConst.OffsetAttr) || dmz.vector.create()
+     , target = dmz.object.counter(obj.handle, dmz.seaConst.TargetAttr) || 0
      , targetPos = _path[target].copy()
      , pos
      ;
@@ -211,22 +212,41 @@ _start = function () {
    keys.forEach(function(key) {
 
       var obj = _helos[key]
-        , startPos = dmz.object.position(obj.handle, dmz.seaConst.StartAttr)
-        , target = dmz.object.position(_carrier) || dmz.vector.create()
-        , offset = startPos.subtract(target)
+//        , pos = dmz.object.position(obj.handle)
+//        , target = dmz.object.position(_carrier) || dmz.vector.create()
+//        , offset = pos.subtract(target)
         , speed = Speed + dmz.util.randomInt(5, 25)
         ;
 
-      dmz.object.position(obj.handle, null, startPos);
-      dmz.object.vector(obj.handle, dmz.seaConst.OffsetAttr, offset);
+//      dmz.object.position(obj.handle, null, pos);
+//      dmz.object.vector(obj.handle, dmz.seaConst.OffsetAttr, offset);
       dmz.object.scalar(obj.handle, dmz.seaConst.SpeedAttr, speed);
-
-      dmz.object.position(obj.handle, dmz.seaConst.TargetAttr, _targetPosition(obj));
+//      dmz.object.position(obj.handle, dmz.seaConst.TargetAttr, _targetPosition(obj));
    });
 };
 
 _stop = function () {
 
+};
+
+_reset = function () {
+
+   var keys = Object.keys(_helos);
+
+   keys.forEach(function(key) {
+
+      var obj = _helos[key]
+        , startPos = dmz.object.position(obj.handle, dmz.seaConst.StartAttr)
+        , target = dmz.object.position(_carrier) || dmz.vector.crCarriereate()
+        , offset = startPos.subtract(target)
+        ;
+
+      dmz.object.orientation(obj.handle, null, StartDir);
+      dmz.object.position(obj.handle, null, startPos);
+      dmz.object.vector(obj.handle, dmz.seaConst.OffsetAttr, offset);
+      dmz.object.counter(obj.handle, dmz.seaConst.TargetAttr, 0);
+      dmz.object.position(obj.handle, dmz.seaConst.TargetAttr, _targetPosition(obj));
+   });
 };
 
 dmz.object.create.observe(self, function (handle, type) {
@@ -242,25 +262,27 @@ dmz.object.create.observe(self, function (handle, type) {
 
 dmz.object.position.observe(self, function (handle, attr, pos){
 
-
    var type = dmz.object.type(handle)
      , obj
      , ship
      , offset
-//     , speed = Speed + dmz.util.randomInt(5, 25)
      ;
 
    if (type.isOfType(HelicopterType)) {
 
       if (_sim && !_sim.control.isRunning()) {
 
+         obj = _helos[handle];
          ship = dmz.object.position(_carrier) || dmz.vector.create([0 ,0 ,0])
          offset = pos.subtract(ship)
 
+         dmz.object.orientation(handle, null, StartDir);
          dmz.object.position(handle, dmz.seaConst.StartAttr, pos);
          dmz.object.vector(handle, dmz.seaConst.OffsetAttr, offset);
-//         dmz.object.scalar(obj.handle, dmz.seaConst.SpeedAttr, speed);
-         _targetPosition(_helos[handle]);
+
+         dmz.object.counter(handle, dmz.seaConst.TargetAttr, 0);
+         dmz.object.position(handle, dmz.seaConst.TargetAttr, _targetPosition(obj));
+//         _targetPosition(_helos[handle]);
       }
    }
 });
@@ -310,5 +332,6 @@ dmz.module.subscribe(self, "simulation", function (Mode, module) {
       _sim.start(self, _start);
       _sim.timeSlice(self, _update);
       _sim.stop(self, _stop);
+      _sim.reset(self, _reset);
    }
 });

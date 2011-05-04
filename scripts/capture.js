@@ -43,7 +43,7 @@ var dmz =
   , ViewDist = 100000
   , ViewStartAngle = 0
   , ViewSpanAngle = 180
-  , DeltaAngle = 2
+  , DeltaAngle = 1
   , CarrierType = dmz.objectType.lookup("Carrier")
   , SensorType = dmz.objectType.lookup("Sensor")
   // Functions
@@ -132,7 +132,9 @@ dmz.module.subscribe(self, "simulation", function (Mode, module) {
       module.start(self, function () {
 
          _capture = true;
+         _row = 0;
          _totalTime = 0;
+         _deltaTime = 0;
          _graphData = [];
 
          module.log("*** Start Data Capture: " + new Date)
@@ -142,7 +144,9 @@ dmz.module.subscribe(self, "simulation", function (Mode, module) {
 
          _capture = false;
          module.log("*** Stop Data Capture: " + new Date)
-         module.saveLog("dump.csv");
+
+//         var homeDir = "/Users/Shared/";
+//         if (dmz.file.valid(homeDir)) { module.saveLog(homeDir + "seadump.csv"); }
 
          graphView.update
             ( function (ix, list) { return list[ix]; }
@@ -150,6 +154,10 @@ dmz.module.subscribe(self, "simulation", function (Mode, module) {
              , _graphData
          );
       });
+
+//      module.reset(self, function () {
+
+//      });
 
       module.timeSlice(self, function (time) {
 

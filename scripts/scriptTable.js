@@ -2,13 +2,11 @@ var dmz =
        { archive: require("dmz/components/archive")
        , file: require("dmz/system/file")
        , fileDialog: require("dmz/ui/fileDialog")
-       , io: require("dmz/runtime/configIO")
        , main: require("dmz/ui/mainWindow")
        , messageBox: require("dmz/ui/messageBox")
        , script: require("dmz/runtime/script")
        , uiConst: require("dmz/ui/consts")
        , uiLoader: require("dmz/ui/uiLoader")
-       , zip: require("dmz/system/zip")
        }
   // Constants
   , DockName = "Script Instance Table"

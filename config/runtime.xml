@@ -81,7 +81,7 @@
       <canvas-object-basic>
          <items>
             <ellipse name="sensor" isect="false">
-               <radius value="250"/>
+               <radius value="400"/>
 <!--               <size width="100" height="200"/>-->
             </ellipse>
          </items>

@@ -45,7 +45,7 @@ _setCurrentFile = function (file) {
 };
 
 _reset = function () {
-   
+
    _setCurrentFile(null);
    _cleanup.send ();
    dmz.undo.reset ();
@@ -62,7 +62,7 @@ _save = function (file) {
 
    if (archive) {
 
-      list = 
+      list =
          [ {name: dmz.zip.ManifestFileName, config: dmz.zip.manifest (SEAFile)}
          , {name: SEAFile, config: archive}
          ];
@@ -75,7 +75,7 @@ _save = function (file) {
 };
 
 dmz.main.addMenu (self, "&File", "New", { shortcut: "new" }, function () {
-   
+
    _reset ();
 });
 
@@ -89,7 +89,7 @@ dmz.main.addMenu (self, "&File", "Open", { shortcut: "open" }, function () {
    _reset ();
 
    file = dmz.fileDialog.getOpenFileName(
-      { caption: "Load file", filter: "Data File (*.csdf)" }, 
+      { caption: "Load file", filter: "Data File (*.csdf)" },
       dmz.main.window());
 
    if (file) {
@@ -135,7 +135,7 @@ function () {
      ;
 
    name = dmz.fileDialog.getSaveFileName(
-      { caption: "Save file", filter: "Data File (*"+FileExt")" },
+      { caption: "Save file", filter: "Data File (*" + FileExt + ")" },
       dmz.main.window());
 
    if (name) {
